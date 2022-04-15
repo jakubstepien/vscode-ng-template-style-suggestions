@@ -5,6 +5,8 @@ import { Observable, Subject, Subscription, switchMap, finalize, startWith } fro
 
 
 export class GlobalCssProvider {
+    private static sortingPrefix: string = 'style2:';
+
     private subs = new Subscription();
     private angularConfig$ = new Subject<{path: string, project: string | null}>();
     private mainStylesUris$: Observable<string[]>;
@@ -42,7 +44,9 @@ export class GlobalCssProvider {
         try {
             var parser = new SassFileToCompletionItemsParser();
             const paths = await Promise.all(stylePaths.map(x => vscode.workspace.findFiles(x)));
-            return parser.getCompletitionItems(paths.flatMap(x => x).map(x => x.fsPath));
+            const items = await parser.getCompletitionItems(paths.flatMap(x => x).map(x => x.fsPath));
+            items.forEach(x => x.sortText = GlobalCssProvider.sortingPrefix + x.label);
+            return items;
         }
         catch (e) {
             console.error("Error parsing items: ", e);

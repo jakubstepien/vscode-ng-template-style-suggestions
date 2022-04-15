@@ -1,6 +1,8 @@
 import * as vscode from 'vscode';
 import { GlobalCssProvider } from './providers/global-css-provider';
 import { TempDocumentContentProvider } from './document-content-providers/temp-document-content-provider';
+import { LocalCssProvider } from './providers/local-css-provider';
+import { addMaps } from './utils/common';
 
 function isInClassAttribute(document: vscode.TextDocument, position: vscode.Position) {
 	const lineStart = new vscode.Position(position.line, 0);
@@ -20,8 +22,11 @@ export function activate(context: vscode.ExtensionContext) {
 				return [];
 			}
 
-			const globalClasses = await globalCssProvider.getGlobalCompletitionItems();
-			return Array.from(globalClasses).map(x => x[1]);
+			const globalCompletitionItems = await globalCssProvider.getGlobalCompletitionItems();
+			const localCompletitionItems = await new LocalCssProvider(document).getCompletitionItems();
+
+			const allItems = addMaps(localCompletitionItems, globalCompletitionItems, true);
+			return Array.from(allItems).map(x => x[1]);
 		}
 	});
 	context.subscriptions.push(disposable);
