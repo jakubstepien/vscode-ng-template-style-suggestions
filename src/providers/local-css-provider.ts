@@ -1,10 +1,11 @@
 import * as vscode from 'vscode';
 import { SassFileToCompletionItemsParser } from '../parsers/scss-file-to-completion-items-parser';
 import { TypescriptParser } from '../parsers/typescript-parser';
+import { addMaps } from '../utils/common';
 
 export class LocalCssProvider {
     private static sortingPrefix: string = 'style1';
-    
+
     constructor(private document: vscode.TextDocument) {
     }
 
@@ -13,12 +14,35 @@ export class LocalCssProvider {
         if (doc == null) {
             return new Map();
         }
-        const urls = new TypescriptParser().getStylesUrls(doc);
-        if (urls == null) {
+        const result = new TypescriptParser().getStyles(doc);
+        if (result == null) {
             return new Map();
         }
 
-        const items = await new SassFileToCompletionItemsParser().getCompletitionItems(urls);
+        const items = new Map<string, vscode.CompletionItem>();
+        const parser = new SassFileToCompletionItemsParser();
+
+        const toParse = [
+            { data: result[0], file: true },
+            { data: result[1], file: false }
+        ];
+
+        const parsed = toParse.map(x => {
+            try {
+                return parser.getCompletitionItems(x.data, x.file);
+            }
+            catch {
+                return null;
+            }
+        });
+        for (const parseResult$ of parsed) {
+            const res = await parseResult$;
+            if (res == null) {
+                continue;
+            }
+            addMaps(items, res, true);
+        }
+
         items.forEach(x => x.sortText = LocalCssProvider.sortingPrefix + x.label);
         return items;
     }

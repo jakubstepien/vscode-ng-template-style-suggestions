@@ -13,8 +13,23 @@ export class SassFileToCompletionItemsParser {
         this.cssLanguageService = getCSSLanguageService();
     }
 
-    public async getCompletitionItems(styleUrls: string[]) {
-        const results = await Promise.all(styleUrls.map(x => sass.compile(x)));
+    public async getCompletitionItems(data: string[], file: boolean) {
+        if (file) {
+            return this.getCompletitionItemsFromFile(data);
+        }
+        else {
+            return this.getCompletitionItemsCode(data);
+        }
+    }
+
+    public async getCompletitionItemsFromFile(styleUrls: string[]) {
+        const results = await Promise.all(styleUrls.map(x => sass.compileAsync(x)));
+        const items = await this.getSymbolsFromSassResult(results);
+        return items;
+    }
+
+    public async getCompletitionItemsCode(styles: string[]) {
+        const results = await Promise.all(styles.map(x => sass.compileStringAsync(x)));
         const items = await this.getSymbolsFromSassResult(results);
         return items;
     }
