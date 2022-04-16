@@ -1,14 +1,16 @@
 import * as vscode from 'vscode';
 import { SassFileToCompletionItemsParser } from '../parsers/scss-file-to-completion-items-parser';
-import { TypescriptComponentDecoratorParser } from '../parsers/typescript-component-decorator-parser';
+import { DecoratorByNameMatchingStrategy } from '../parsers/typescript-component-decorator/decorator-by-name-matching-strategy';
+import { DecoratorByPositionMatchingStrategy } from '../parsers/typescript-component-decorator/decorator-by-position-matching-strategy';
+import { TypescriptComponentDecoratorParser } from '../parsers/typescript-component-decorator/typescript-component-decorator-parser';
 import { addMaps } from '../utils/common';
 
 export class LocalCssProvider {
     private static sortingPrefix: string = 'style1';
     private isInline: boolean;
 
-    constructor(private document: vscode.TextDocument, private position: vscode.Position | null = null) {
-        //if template is inlined path will point to virtual doc with .ts.html extension
+    constructor(private document: vscode.TextDocument, private position: vscode.Position) {
+        //if angular language service is installed and template is inlined path will point to virtual doc with .ts.html extension
         this.isInline = document.uri.path.endsWith(".ts.html");
     }
 
@@ -18,9 +20,16 @@ export class LocalCssProvider {
             return this.getCompletitionItemsBasedOnDirectory();
         }
 
-        const tsParser = new TypescriptComponentDecoratorParser();
-        const result = tsParser.getStyles(doc, this.isInline ? this.position : null);
-        if (result == null || (result[0].length === 0 && result[1].length === 0 )) {
+        const tsParser = new TypescriptComponentDecoratorParser(doc);
+
+        //if is inline I cannot use name since there may by multiple components in file and they won't have template url
+        //so I look for decorator which contains cursor position
+        const decoratorMatchingStrategy = this.isInline
+            ? new DecoratorByPositionMatchingStrategy(this.position)
+            : new DecoratorByNameMatchingStrategy(doc);
+        const result = tsParser.getStylesFromDecorator(decoratorMatchingStrategy);
+
+        if (result == null || (result[0].length === 0 && result[1].length === 0)) {
             return this.getCompletitionItemsBasedOnDirectory();
         }
 
