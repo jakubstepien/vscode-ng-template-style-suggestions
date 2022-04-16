@@ -1,18 +1,21 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import { SassFileToCompletionItemsParser } from '../parsers/scss-file-to-completion-items-parser';
-import { Observable, Subject, Subscription, switchMap, finalize, startWith } from 'rxjs';
+import { Observable, Subject, Subscription, switchMap, finalize, startWith, of } from 'rxjs';
 
 
-export class GlobalCssProvider {
+class GlobalCssProvider {
     private static sortingPrefix: string = 'style2:';
 
     private subs = new Subscription();
     private angularConfig$ = new Subject<{path: string, project: string | null}>();
-    private mainStylesUris$: Observable<string[]>;
+    private mainStylesUris$: Observable<string[]> = of([]);
     private items: Promise<Map<string, vscode.CompletionItem>> = Promise.resolve(new Map<string, vscode.CompletionItem>());
 
-    constructor(private configPath: string = '**/*angular.json', private projectName: string | null = null) {
+    init(configPath: string = '**/*angular.json', projectName: string | null = null) {
+        this.subs.unsubscribe();
+        this.subs = new Subscription();
+
         const config = {path: configPath, project: projectName};
 
         const watcher = vscode.workspace.createFileSystemWatcher(configPath);
@@ -76,3 +79,5 @@ export class GlobalCssProvider {
         this.subs.unsubscribe();
     }
 }
+
+export const globalCssProvider = new GlobalCssProvider();

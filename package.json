@@ -13,7 +13,14 @@
     "workspaceContains:**/angular.json"
   ],
   "main": "./out/extension.js",
-  "contributes": {},
+  "contributes": {
+    "commands": [
+      {
+        "command": "angular-sass-sugggestions.reset-cache",
+        "title": "Angular Sass Suggestions: Reset cache"
+      }
+    ]
+  },
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",

@@ -6,8 +6,12 @@ export class TempDocumentContentProvider implements vscode.TextDocumentContentPr
     private static files = new Map<string, string>();
     private constructor() { }
 
-    public static register() {
-        vscode.workspace.registerTextDocumentContentProvider(TempDocumentContentProvider.scheme, new TempDocumentContentProvider());
+    public static register(context: vscode.ExtensionContext) {
+        const provider = new TempDocumentContentProvider();
+        const disposable = vscode.workspace.registerTextDocumentContentProvider(TempDocumentContentProvider.scheme, provider);
+        
+        context.subscriptions.push(disposable);
+        context.subscriptions.push(provider);
     }
 
     public static async getDocument(content: string) {
@@ -19,7 +23,7 @@ export class TempDocumentContentProvider implements vscode.TextDocumentContentPr
         return [doc, uuid] as const;
     }
 
-    public static async freeDocument(uuid: string){
+    public static async freeDocument(uuid: string) {
         TempDocumentContentProvider.files.delete(uuid);
     }
 
@@ -30,5 +34,7 @@ export class TempDocumentContentProvider implements vscode.TextDocumentContentPr
         return TempDocumentContentProvider.files.get(uuid);
     }
 
-
+    dispose() {
+        TempDocumentContentProvider.files.forEach(x => TempDocumentContentProvider.freeDocument(x));
+    }
 }

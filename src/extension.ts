@@ -1,8 +1,9 @@
 import * as vscode from 'vscode';
-import { GlobalCssProvider } from './providers/global-css-provider';
+import { globalCssProvider } from './providers/global-css-provider';
 import { TempDocumentContentProvider } from './document-content-providers/temp-document-content-provider';
 import { LocalCssProvider } from './providers/local-css-provider';
 import { addMaps } from './utils/common';
+import { registerCommands, commands } from './commands';
 
 function isInClassAttribute(document: vscode.TextDocument, position: vscode.Position) {
 	const lineStart = new vscode.Position(position.line, 0);
@@ -11,12 +12,12 @@ function isInClassAttribute(document: vscode.TextDocument, position: vscode.Posi
 	return text.match(/class="[^"]*$/) !== null;
 }
 
-let globalCssProvider: GlobalCssProvider = null!;
 export function activate(context: vscode.ExtensionContext) {
-	TempDocumentContentProvider.register();
-	globalCssProvider = new GlobalCssProvider();
+	TempDocumentContentProvider.register(context);
+	registerCommands(context);
+	commands.resetCache.invoke();
 
-	let disposable = vscode.languages.registerCompletionItemProvider('html', {
+	context.subscriptions.push(vscode.languages.registerCompletionItemProvider('html', {
 		async provideCompletionItems(document: vscode.TextDocument, position: vscode.Position) {
 			if (isInClassAttribute(document, position) === false) {
 				return [];
@@ -28,8 +29,7 @@ export function activate(context: vscode.ExtensionContext) {
 			const allItems = addMaps(localCompletitionItems, globalCompletitionItems, true);
 			return Array.from(allItems).map(x => x[1]);
 		}
-	});
-	context.subscriptions.push(disposable);
+	}));
 }
 
 // this method is called when your extension is deactivated
