@@ -34,7 +34,7 @@ export class SassFileToCompletionItemsParser {
             const paths = angularConfigProvider.configSnapshot?.includePaths ?? [];
             paths.push(nodePath);
 
-            const results = await Promise.all(styleUrls.map(x => sass.compileAsync(x, {
+            const results = await Promise.all(styleUrls.map(x => sass.compile(x, {
                 loadPaths: paths,
                 importers: [{
                     //https://sass-lang.com/documentation/js-api/interfaces/FileImporter
@@ -60,7 +60,7 @@ export class SassFileToCompletionItemsParser {
         }
 
         try {
-            const results = await Promise.all(styles.map(x => sass.compileStringAsync(x)));
+            const results = await Promise.all(styles.map(x => sass.compileString(x)));
             const items = await this.getSymbolsFromSassResult(results);
             return items;
         }
