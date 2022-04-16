@@ -9,6 +9,7 @@ export type AngularConfig = {
     styles: string[]
     includePaths: string[];
     includePathsFs: string[];
+    nodeModulesLocation: string;
 };
 
 class AngularConfigProvider {
@@ -65,7 +66,8 @@ class AngularConfigProvider {
             project: projectName,
             styles: styles,
             includePaths: includePaths,
-            includePathsFs: includePathsFs
+            includePathsFs: includePathsFs,
+            nodeModulesLocation: path.join(path.dirname(fsPath), 'node_modules'),
         };
     }
 

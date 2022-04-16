@@ -5,6 +5,8 @@ import { getCSSLanguageService, LanguageService } from "vscode-css-languageservi
 import { mapDocument } from '../utils/css-language-service-utils';
 import { addMaps } from '../utils/common';
 import { angularConfigProvider } from '../providers/angular-config-provider';
+import path = require('path');
+import { pathToFileURL } from 'url';
 
 export class SassFileToCompletionItemsParser {
 
@@ -24,24 +26,37 @@ export class SassFileToCompletionItemsParser {
     }
 
     public async getCompletitionItemsFromFile(styleUrls: string[]): Promise<Map<string, vscode.CompletionItem>> {
-        if(styleUrls == null || styleUrls.length === 0){
+        if (styleUrls == null || styleUrls.length === 0) {
             return new Map();
         }
 
         try {
+            const nodePath = angularConfigProvider.configSnapshot!.nodeModulesLocation;
+            const paths = angularConfigProvider.configSnapshot?.includePathsFs ?? [];
+            paths.push(nodePath);
+
             const results = await Promise.all(styleUrls.map(x => sass.compileAsync(x, {
-                loadPaths: angularConfigProvider.configSnapshot?.includePathsFs ?? [],
+                loadPaths: paths,
+                importers: [{
+                    //https://sass-lang.com/documentation/js-api/interfaces/FileImporter
+                    findFileUrl(url) {
+                        if (!url.startsWith('~')) {
+                            return null;
+                        }
+                        return new URL(url.substring(1), pathToFileURL(nodePath + '/'));
+                    },
+                }]
             })));
             const items = await this.getSymbolsFromSassResult(results);
             return items;
         }
-        catch {
+        catch (e) {
             return new Map();
         }
     }
 
     public async getCompletitionItemsCode(styles: string[]): Promise<Map<string, vscode.CompletionItem>> {
-        if(styles == null || styles.length === 0){
+        if (styles == null || styles.length === 0) {
             return new Map();
         }
 
