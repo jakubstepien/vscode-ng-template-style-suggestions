@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { angularConfigProvider } from './providers/angular-config-provider';
 import { globalCssProvider } from './providers/global-css-provider';
 
-const commandPrefix = 'angular-sass-sugggestions';
+const commandPrefix = 'angular-sass-suggestions';
 
 class Command<TArg> {
     constructor(private command: string, private callback: (arg: TArg) => any, thisArg?: any) {

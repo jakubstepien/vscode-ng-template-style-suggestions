@@ -1,8 +1,14 @@
 {
   "name": "vscode-angular-sass-suggestions",
-  "displayName": "Angular SASS/SCSS/CSS Suggestions",
+  "displayName": "Angular SASS classes suggestions",
   "description": "",
   "version": "0.9.1",
+  "license": "MIT",
+  "author": "jakubstepien",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jakubstepien/vscode-angular-sass-suggestions"
+  },
   "engines": {
     "vscode": "^1.63.0"
   },
@@ -16,7 +22,7 @@
   "contributes": {
     "commands": [
       {
-        "command": "angular-sass-sugggestions.reset-cache",
+        "command": "angular-sass-suggestions.reset-cache",
         "title": "Angular Sass Suggestions: Reset cache"
       }
     ]
