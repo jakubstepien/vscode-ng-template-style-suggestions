@@ -38,8 +38,7 @@ class GlobalCssProvider {
     private async initItems(stylePaths: string[]) {
         try {
             var parser = new SassFileToCompletionItemsParser();
-            const paths = await Promise.all(stylePaths.map(x => vscode.workspace.findFiles(x)));
-            const items = await parser.getCompletitionItemsFromFile(paths.flatMap(x => x).map(x => x.fsPath));
+            const items = await parser.getCompletitionItemsFromFile(stylePaths);
             items.forEach(x => x.sortText = GlobalCssProvider.sortingPrefix + x.label);
             return items;
         }

@@ -5,7 +5,6 @@ import { getCSSLanguageService, LanguageService } from "vscode-css-languageservi
 import { mapDocument } from '../utils/css-language-service-utils';
 import { addMaps } from '../utils/common';
 import { angularConfigProvider } from '../providers/angular-config-provider';
-import path = require('path');
 import { pathToFileURL } from 'url';
 
 export class SassFileToCompletionItemsParser {
@@ -32,7 +31,7 @@ export class SassFileToCompletionItemsParser {
 
         try {
             const nodePath = angularConfigProvider.configSnapshot!.nodeModulesLocation;
-            const paths = angularConfigProvider.configSnapshot?.includePathsFs ?? [];
+            const paths = angularConfigProvider.configSnapshot?.includePaths ?? [];
             paths.push(nodePath);
 
             const results = await Promise.all(styleUrls.map(x => sass.compileAsync(x, {

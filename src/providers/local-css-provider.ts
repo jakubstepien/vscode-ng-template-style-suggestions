@@ -8,7 +8,7 @@ export class LocalCssProvider {
     private isInline: boolean;
 
     constructor(private document: vscode.TextDocument, private position: vscode.Position | null = null) {
-        //if template is inlined path will point to vierual doc with .ts.html extension
+        //if template is inlined path will point to virtual doc with .ts.html extension
         this.isInline = document.uri.path.endsWith(".ts.html");
     }
 

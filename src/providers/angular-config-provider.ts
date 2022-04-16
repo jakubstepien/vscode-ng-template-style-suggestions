@@ -8,7 +8,6 @@ export type AngularConfig = {
     project: string,
     styles: string[]
     includePaths: string[];
-    includePathsFs: string[];
     nodeModulesLocation: string;
 };
 
@@ -48,26 +47,27 @@ class AngularConfigProvider {
 
     private async getConfig(fsPath: string, project: string | null): Promise<AngularConfig> {
         const json = await fs.promises.readFile(fsPath, { encoding: 'utf-8' });
+        const mainDir = path.dirname(fsPath);
 
         const configObj = JSON.parse(json);
         const projectName = project ?? configObj.defaultProject as string;
 
         const options = configObj.projects[projectName].architect.build.options;
-        const styles = options.styles as string[];
+        const styles = (options.styles as string[] ?? []).map(x => {
+            return path.join(mainDir, x);
+        });
 
         const includePaths = options?.stylePreprocessorOptions?.includePaths as string[] ?? [];
         const includePathsFs = includePaths.map(x => {
-            const dir = path.dirname(fsPath);
-            return path.join(dir, x);
+            return path.join(mainDir, x);
         });
 
         return {
             path: fsPath,
             project: projectName,
             styles: styles,
-            includePaths: includePaths,
-            includePathsFs: includePathsFs,
-            nodeModulesLocation: path.join(path.dirname(fsPath), 'node_modules'),
+            includePaths: includePathsFs,
+            nodeModulesLocation: path.join(mainDir, 'node_modules'),
         };
     }
 
