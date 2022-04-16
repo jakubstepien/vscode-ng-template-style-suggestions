@@ -27,14 +27,7 @@ export class LocalCssProvider {
             { data: result[1], file: false }
         ];
 
-        const parsed = toParse.map(x => {
-            try {
-                return parser.getCompletitionItems(x.data, x.file);
-            }
-            catch {
-                return null;
-            }
-        });
+        const parsed = toParse.map(x => parser.getCompletitionItems(x.data, x.file));
         for (const parseResult$ of parsed) {
             const res = await parseResult$;
             if (res == null) {

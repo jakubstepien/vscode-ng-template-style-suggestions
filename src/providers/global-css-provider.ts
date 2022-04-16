@@ -1,30 +1,24 @@
 import * as vscode from 'vscode';
-import * as fs from 'fs';
 import { SassFileToCompletionItemsParser } from '../parsers/scss-file-to-completion-items-parser';
 import { Observable, Subject, Subscription, switchMap, finalize, startWith, of } from 'rxjs';
-
-
+import { angularConfigProvider } from './angular-config-provider';
 class GlobalCssProvider {
     private static sortingPrefix: string = 'style2:';
-
     private subs = new Subscription();
-    private angularConfig$ = new Subject<{path: string, project: string | null}>();
     private mainStylesUris$: Observable<string[]> = of([]);
     private items: Promise<Map<string, vscode.CompletionItem>> = Promise.resolve(new Map<string, vscode.CompletionItem>());
 
-    init(configPath: string = '**/*angular.json', projectName: string | null = null) {
-        this.subs.unsubscribe();
+    public init() {
+        this.subs?.unsubscribe();
         this.subs = new Subscription();
 
-        const config = {path: configPath, project: projectName};
+        this.mainStylesUris$ = angularConfigProvider.config$.pipe(
+            switchMap(x => {
+                if (x == null) {
+                    return of([]);
+                }
 
-        const watcher = vscode.workspace.createFileSystemWatcher(configPath);
-        watcher.onDidChange(() => this.angularConfig$.next(config));
-        this.subs.add(this.angularConfig$.pipe(finalize(() => watcher.dispose())).subscribe());
-
-        this.mainStylesUris$ = this.angularConfig$.pipe(
-            switchMap(this.getMainScssFilesUri),
-            switchMap(files => {
+                const files = x.styles;
                 const subject = new Subject<string[]>();
                 const watchers = files.map(x => vscode.workspace.createFileSystemWatcher('**/' + x));
                 watchers.forEach(x => {
@@ -37,8 +31,6 @@ class GlobalCssProvider {
                 return obs;
             }));
         this.subs.add(this.mainStylesUris$.subscribe(x => this.items = this.initItems(x)));
-
-        this.angularConfig$.next(config);
     }
 
     getGlobalCompletitionItems() { return this.items; }
@@ -57,25 +49,7 @@ class GlobalCssProvider {
         }
     }
 
-    private async getMainScssFilesUri(angularConfig: {path: string, project: string | null}): Promise<string[]> {
-        const angularJson = await vscode.workspace.findFiles(angularConfig.path);
-        if (angularJson.length === 0) {
-            throw new Error("Missing angular.json file, searched path: " + angularConfig.path);
-        }
-        if (angularJson.length > 1) {
-            throw new Error("Found multiple angular.json files, searched path: " + angularConfig.path);
-        }
-
-        const config = angularJson[0];
-        const json = await fs.promises.readFile(config.fsPath, { encoding: 'utf-8' });
-
-        const configObj = JSON.parse(json);
-        const projectName = angularConfig.project ?? configObj.defaultProject as string;
-        return configObj.projects[projectName].architect.build.options.styles;
-    }
-
     dispose() {
-        this.angularConfig$.complete();
         this.subs.unsubscribe();
     }
 }

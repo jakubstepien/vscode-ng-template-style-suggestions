@@ -4,6 +4,7 @@ import { TempDocumentContentProvider } from '../document-content-providers/temp-
 import { getCSSLanguageService, LanguageService } from "vscode-css-languageservice";
 import { mapDocument } from '../utils/css-language-service-utils';
 import { addMaps } from '../utils/common';
+import { angularConfigProvider } from '../providers/angular-config-provider';
 
 export class SassFileToCompletionItemsParser {
 
@@ -23,15 +24,35 @@ export class SassFileToCompletionItemsParser {
     }
 
     public async getCompletitionItemsFromFile(styleUrls: string[]) {
-        const results = await Promise.all(styleUrls.map(x => sass.compileAsync(x)));
-        const items = await this.getSymbolsFromSassResult(results);
-        return items;
+        if(styleUrls == null || styleUrls.length === 0){
+            return new Map();
+        }
+
+        try {
+            const results = await Promise.all(styleUrls.map(x => sass.compileAsync(x, {
+                loadPaths: angularConfigProvider.configSnapshot?.includePathsFs ?? [],
+            })));
+            const items = await this.getSymbolsFromSassResult(results);
+            return items;
+        }
+        catch {
+            return new Map();
+        }
     }
 
     public async getCompletitionItemsCode(styles: string[]) {
-        const results = await Promise.all(styles.map(x => sass.compileStringAsync(x)));
-        const items = await this.getSymbolsFromSassResult(results);
-        return items;
+        if(styles == null || styles.length === 0){
+            return new Map();
+        }
+
+        try {
+            const results = await Promise.all(styles.map(x => sass.compileStringAsync(x)));
+            const items = await this.getSymbolsFromSassResult(results);
+            return items;
+        }
+        catch {
+            return new Map();
+        }
     }
 
     private async getSymbolsFromSassResult(sassResults: sass.CompileResult[]) {

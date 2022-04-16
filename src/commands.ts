@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { angularConfigProvider } from './providers/angular-config-provider';
 import { globalCssProvider } from './providers/global-css-provider';
 
 const commandPrefix = 'angular-sass-sugggestions';
@@ -17,7 +18,10 @@ class Command<TArg> {
 }
 
 export const commands = {
-    resetCache: new Command<void>(`${commandPrefix}.reset-cache`, () => globalCssProvider.init())
+    resetCache: new Command<void>(`${commandPrefix}.reset-cache`, async () => {
+        await angularConfigProvider.init();
+        globalCssProvider.init();
+    })
 };
 
 export function registerCommands(context: vscode.ExtensionContext) {
