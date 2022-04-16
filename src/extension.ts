@@ -3,7 +3,7 @@ import { globalCssProvider } from './providers/global-css-provider';
 import { TempDocumentContentProvider } from './document-content-providers/temp-document-content-provider';
 import { LocalCssProvider } from './providers/local-css-provider';
 import { addMaps } from './utils/common';
-import { registerCommands, commands } from './commands';
+import { registerCommands, commands, registerConfigurationChangeEvents } from './commands';
 import { angularConfigProvider } from './providers/angular-config-provider';
 
 function isInClassAttribute(document: vscode.TextDocument, position: vscode.Position) {
@@ -16,6 +16,8 @@ function isInClassAttribute(document: vscode.TextDocument, position: vscode.Posi
 export function activate(context: vscode.ExtensionContext) {
 	TempDocumentContentProvider.register(context);
 	registerCommands(context);
+	registerConfigurationChangeEvents(context);
+
 	commands.resetCache.invoke();
 
 	context.subscriptions.push(vscode.languages.registerCompletionItemProvider('html', {

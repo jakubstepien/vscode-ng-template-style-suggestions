@@ -11,6 +11,7 @@ export type AngularConfig = {
     nodeModulesLocation: string;
 };
 
+const angularJsonPath = '**/*angular.json';
 class AngularConfigProvider {
     private watcher: vscode.FileSystemWatcher | null = null;
     private config = new BehaviorSubject<AngularConfig | null>(null);
@@ -20,7 +21,7 @@ class AngularConfigProvider {
         return this.config.value;
     }
 
-    public async init(angularJsonPath = '**/*angular.json', project: string | null = null) {
+    public async init(project: string | null = null) {
         const loadConfig = async (path: string) => {
             const newConfig = await this.getConfig(path, project);
             this.config.next(newConfig);
@@ -45,13 +46,26 @@ class AngularConfigProvider {
         return angularJson[0];
     }
 
-    private async getConfig(fsPath: string, project: string | null): Promise<AngularConfig> {
+    private async getConfig(fsPath: string, projectName: string | null): Promise<AngularConfig> {
         const json = await fs.promises.readFile(fsPath, { encoding: 'utf-8' });
         const mainDir = path.dirname(fsPath);
 
         const configObj = JSON.parse(json);
-        const projectName = project ?? configObj.defaultProject as string;
+        if (projectName == null || projectName === '') {
+            projectName = configObj.defaultProject as string;
+        }
 
+        const project = configObj.projects[projectName];
+        if (project == null) {
+            console.error(`Project ${projectName} doesn't exist in angular.json ${fsPath}`);
+            return {
+                path: fsPath,
+                project: projectName,
+                styles: [],
+                includePaths: [],
+                nodeModulesLocation: path.join(mainDir, 'node_modules'),
+            };
+        }
         const options = configObj.projects[projectName].architect.build.options;
         const styles = (options.styles as string[] ?? []).map(x => {
             return path.join(mainDir, x);

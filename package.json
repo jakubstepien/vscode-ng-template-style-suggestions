@@ -22,8 +22,26 @@
   "contributes": {
     "commands": [
       {
-        "command": "angular-sass-suggestions.reset-cache",
+        "command": "angularSassSuggestions.resetCache",
         "title": "Angular Sass Suggestions: Reset cache"
+      }
+    ],
+    "configuration":[
+      {
+        "title": "Angular Sass classes suggestions",
+        "properties": {
+          "angularSassSuggestions.project": {
+            "type": "string",
+            "description": "Name of the project from angular.json get global styles from, if empty uses value of defaultProject from angular.json"           
+          },
+          "angularSassSuggestions.extraFileWatchers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "List of file patterns whose change should trigger cache reset"
+          }
+        }
       }
     ]
   },
