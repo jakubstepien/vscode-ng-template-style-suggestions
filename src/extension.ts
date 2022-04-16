@@ -26,7 +26,7 @@ export function activate(context: vscode.ExtensionContext) {
 			}
 
 			const globalCompletitionItems = await globalCssProvider.getGlobalCompletitionItems();
-			const localCompletitionItems = await new LocalCssProvider(document).getCompletitionItems();
+			const localCompletitionItems = await new LocalCssProvider(document, position).getCompletitionItems();
 
 			const allItems = addMaps(localCompletitionItems, globalCompletitionItems, true);
 			return Array.from(allItems).map(x => x[1]);
