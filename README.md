@@ -3,12 +3,12 @@
 This extension provides autocomplete for css classes in angular templates.
 
 ### Classes from component style
-![Component scoped css classes](https://github.com/jakubstepien/vscode-angular-sass-suggestions/blob/feature/local_styles/doc/images/local-css.gif)
+![Component scoped css classes](https://github.com/jakubstepien/vscode-angular-sass-suggestions/blob/master/doc/images/local-css.gif)
 
 Note: Suggestions in html file templates rely on matching filenames. So extension won't work if for example foo.component.html file is in some other directory without matching foo.component.ts or fo.component.scss file.
 
 ### Classes from global styles
-![Global css classes](https://github.com/jakubstepien/vscode-angular-sass-suggestions/blob/feature/local_styles/doc/images/global-css.gif)
+![Global css classes](https://github.com/jakubstepien/vscode-angular-sass-suggestions/blob/master/doc/images/global-css.gif)
 
 Extension tracks files specified in styles array of default project in angular.json file. These suggestions are cached until one of the files changes or angular.json changes.
 
