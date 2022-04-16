@@ -13,15 +13,15 @@ export class LocalCssProvider {
     }
 
     public async getCompletitionItems(): Promise<Map<string, vscode.CompletionItem>> {
-        const doc = await this.getTemplateDoc();
+        const doc = await this.getMatchingDoc('.ts');
         if (doc == null) {
-            return new Map();
+            return this.getCompletitionItemsBasedOnDirectory();
         }
 
         const tsParser = new TypescriptComponentDecoratorParser();
         const result = tsParser.getStyles(doc, this.isInline ? this.position : null);
-        if (result == null) {
-            return new Map();
+        if (result == null || (result[0].length === 0 && result[1].length === 0 )) {
+            return this.getCompletitionItemsBasedOnDirectory();
         }
 
         const items = new Map<string, vscode.CompletionItem>();
@@ -41,11 +41,33 @@ export class LocalCssProvider {
             addMaps(items, res, true);
         }
 
-        items.forEach(x => x.sortText = LocalCssProvider.sortingPrefix + x.label);
+        this.setItemsOrder(items);
         return items;
     }
 
-    private async getTemplateDoc() {
+    private setItemsOrder(items: Map<string, vscode.CompletionItem>) {
+        items.forEach(x => x.sortText = LocalCssProvider.sortingPrefix + x.label);
+    }
+
+    /**
+     * Fallback method to search from css file matched by name if matching from decorator fails
+     */
+    private async getCompletitionItemsBasedOnDirectory(): Promise<Map<string, vscode.CompletionItem>> {
+        const doc = await this.getMatchingDoc('.scss')
+            ?? await this.getMatchingDoc(".sass")
+            ?? await this.getMatchingDoc(".css");
+
+        if (doc == null) {
+            return new Map();
+        }
+
+        const parser = new SassFileToCompletionItemsParser();
+        const items = await parser.getCompletitionItemsFromFile([doc.uri.fsPath]);
+        this.setItemsOrder(items);
+        return items;
+    }
+
+    private async getMatchingDoc(extension: string) {
         try {
 
             let expectedFileName = '';
@@ -56,14 +78,14 @@ export class LocalCssProvider {
                 const uri = vscode.Uri.parse(decoded);
                 const uriWithoutFile = uri.path.substring('/file://'.length);
                 //remove .html so it ends with .ts
-                const extensionStart = uriWithoutFile.lastIndexOf('.html');
-                expectedFileName = uriWithoutFile.substring(0, extensionStart);
+                const extensionStart = uriWithoutFile.lastIndexOf('.ts.html');
+                expectedFileName = uriWithoutFile.substring(0, extensionStart) + extension;
             }
             else {
                 const path = this.document.uri.path;
                 const extensionStart = path.lastIndexOf('.');
                 const baseName = path.substring(0, extensionStart);
-                expectedFileName = `${baseName}.ts`;
+                expectedFileName = baseName + extension;
             }
 
             const doc = await vscode.workspace.openTextDocument(expectedFileName);

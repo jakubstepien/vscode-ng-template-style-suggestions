@@ -14,7 +14,7 @@ export class SassFileToCompletionItemsParser {
         this.cssLanguageService = getCSSLanguageService();
     }
 
-    public async getCompletitionItems(data: string[], file: boolean) {
+    public async getCompletitionItems(data: string[], file: boolean): Promise<Map<string, vscode.CompletionItem>> {
         if (file) {
             return this.getCompletitionItemsFromFile(data);
         }
@@ -23,7 +23,7 @@ export class SassFileToCompletionItemsParser {
         }
     }
 
-    public async getCompletitionItemsFromFile(styleUrls: string[]) {
+    public async getCompletitionItemsFromFile(styleUrls: string[]): Promise<Map<string, vscode.CompletionItem>> {
         if(styleUrls == null || styleUrls.length === 0){
             return new Map();
         }
@@ -40,7 +40,7 @@ export class SassFileToCompletionItemsParser {
         }
     }
 
-    public async getCompletitionItemsCode(styles: string[]) {
+    public async getCompletitionItemsCode(styles: string[]): Promise<Map<string, vscode.CompletionItem>> {
         if(styles == null || styles.length === 0){
             return new Map();
         }

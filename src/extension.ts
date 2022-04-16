@@ -6,7 +6,6 @@ import { addMaps } from './utils/common';
 import { registerCommands, commands } from './commands';
 import { angularConfigProvider } from './providers/angular-config-provider';
 
-
 function isInClassAttribute(document: vscode.TextDocument, position: vscode.Position) {
 	const lineStart = new vscode.Position(position.line, 0);
 	const range = new vscode.Range(lineStart, position);

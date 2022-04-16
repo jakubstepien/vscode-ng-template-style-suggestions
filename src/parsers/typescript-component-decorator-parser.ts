@@ -15,15 +15,20 @@ export type StyleParseResult = [styleUrls: string[], inlineStyles: string[]];
 export class TypescriptComponentDecoratorParser {
 
     public getStyles(doc: vscode.TextDocument, decoratorTemplatePosition: vscode.Position | null = null): StyleParseResult | null {
-        const file = TypescriptComponentDecoratorParser.decompileFile(doc);
-        if (file?.statements == null) {
+        try {
+            const file = TypescriptComponentDecoratorParser.decompileFile(doc);
+            if (file?.statements == null) {
+                return null;
+            }
+            const [styleUrls, inlineStyles] = this.extractStylesFromDecorators(doc, file, decoratorTemplatePosition);
+
+            const dir = path.dirname(doc.uri.fsPath);
+            const urls = styleUrls.map(x => path.join(dir, x));
+            return [urls, inlineStyles];
+        }
+        catch {
             return null;
         }
-        const [styleUrls, inlineStyles] = this.extractStylesFromDecorators(doc, file, decoratorTemplatePosition);
-
-        const dir = path.dirname(doc.uri.fsPath);
-        const urls = styleUrls.map(x => path.join(dir, x));
-        return [urls, inlineStyles];
     }
 
     private extractStylesFromDecorators(doc: vscode.TextDocument, sourceFile: ts.SourceFile, decoratorTemplatePosition: vscode.Position | null): StyleParseResult {
