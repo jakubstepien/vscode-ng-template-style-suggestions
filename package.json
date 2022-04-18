@@ -1,10 +1,12 @@
 {
   "name": "vscode-angular-sass-suggestions",
   "displayName": "Angular SASS classes suggestions",
-  "description": "",
-  "version": "0.9.1",
+  "description": "Suggestions for css classes in Angular templates",
+  "version": "0.9.5",
   "license": "MIT",
   "author": "jakubstepien",
+  "publisher": "jakubstepien",
+  "icon": "images/angular.png",
   "repository": {
     "type": "git",
     "url": "https://github.com/jakubstepien/vscode-angular-sass-suggestions"
