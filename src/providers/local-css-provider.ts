@@ -86,7 +86,6 @@ export class LocalCssProvider {
                 const decoded = decodeURIComponent(this.document.uri.path);
                 const uri = vscode.Uri.parse(decoded);
                 const uriWithoutFile = uri.path.substring('/file://'.length);
-                //remove .html so it ends with .ts
                 const extensionStart = uriWithoutFile.lastIndexOf('.ts.html');
                 expectedFileName = uriWithoutFile.substring(0, extensionStart) + extension;
             }
@@ -101,7 +100,7 @@ export class LocalCssProvider {
             return doc;
         }
         catch (e) {
-            console.error("Error getting component file");
+            console.error(`Error getting component ${this.document.uri.path} matching file ${extension}: ${e}`);
             return null;
         }
     }

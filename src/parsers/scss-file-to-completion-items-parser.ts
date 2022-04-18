@@ -30,28 +30,35 @@ export class SassFileToCompletionItemsParser {
         }
 
         try {
-            const nodePath = angularConfigProvider.configSnapshot!.nodeModulesLocation;
-            const paths = angularConfigProvider.configSnapshot?.includePaths ?? [];
-            paths.push(nodePath);
-
-            const results = await Promise.all(styleUrls.map(x => sass.compile(x, {
-                loadPaths: paths,
-                importers: [{
-                    //https://sass-lang.com/documentation/js-api/interfaces/FileImporter
-                    findFileUrl(url) {
-                        if (!url.startsWith('~')) {
-                            return null;
-                        }
-                        return new URL(url.substring(1), pathToFileURL(nodePath + '/'));
-                    },
-                }]
-            })));
+            const results = await Promise.all(styleUrls.map(x => sass.compile(x, this.getSassOptions())));
             const items = await this.getSymbolsFromSassResult(results);
             return items;
         }
         catch (e) {
+            console.error("Error Compiling scss string: " + e);
             return new Map();
         }
+    }
+
+    private getSassOptions(): sass.Options<"sync"> | undefined {
+        const nodePath = angularConfigProvider.configSnapshot?.nodeModulesLocation;
+        const paths = angularConfigProvider.configSnapshot?.includePaths ?? [];
+        if (nodePath != null) {
+            paths.push(nodePath);
+        }
+
+        return {
+            loadPaths: paths,
+            importers: [{
+                //https://sass-lang.com/documentation/js-api/interfaces/FileImporter
+                findFileUrl(url) {
+                    if (!url.startsWith('~')) {
+                        return null;
+                    }
+                    return new URL(url.substring(1), pathToFileURL(nodePath + '/'));
+                },
+            }]
+        };
     }
 
     public async getCompletitionItemsCode(styles: string[]): Promise<Map<string, vscode.CompletionItem>> {
@@ -60,11 +67,12 @@ export class SassFileToCompletionItemsParser {
         }
 
         try {
-            const results = await Promise.all(styles.map(x => sass.compileString(x)));
+            const results = await Promise.all(styles.map(x => sass.compileString(x, this.getSassOptions())));
             const items = await this.getSymbolsFromSassResult(results);
             return items;
         }
-        catch {
+        catch (e) {
+            console.error("Error Compiling scss string: " + e);
             return new Map();
         }
     }
