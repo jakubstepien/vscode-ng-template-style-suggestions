@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
-import { LocalCssProvider } from './local-css-provider';
-import { globalCssProvider } from './global-css-provider';
+import { LocalStylesProvider } from './localStylesProvider';
+import { globalStylesProvider } from './globalStylesprovider';
 import { addMaps, isDocumentInlineTemplate } from '../utils/common';
 import { Subject } from 'rxjs';
 
@@ -30,8 +30,8 @@ class ActiveDocumentStyleProvider {
 
         if (this.items == null || this.cacheEnabled === false) {
             this.items = new Promise(async res => {
-                const globalCompletitionItems = await globalCssProvider.getGlobalCompletitionItems();
-                const localCompletitionItems = await new LocalCssProvider(document, position).getCompletitionItems();
+                const globalCompletitionItems = await globalStylesProvider.getGlobalCompletitionItems();
+                const localCompletitionItems = await new LocalStylesProvider(document, position).getCompletitionItems();
 
                 const combinedMaps = addMaps(localCompletitionItems, globalCompletitionItems, true);
                 const allItems = Array.from(combinedMaps).map(x => x[1]);

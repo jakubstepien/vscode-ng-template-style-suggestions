@@ -1,10 +1,10 @@
 import * as vscode from 'vscode';
 import * as sass from 'sass';
-import { TempDocumentContentProvider } from '../document-content-providers/temp-document-content-provider';
+import { TempDocumentContentProvider } from '../documentContentProviders/tempDocumentContentProvider';
 import { addMaps } from '../utils/common';
-import { angularConfigProvider } from '../providers/angular-config-provider';
+import { angularConfigProvider } from '../providers/angularConfigProvider';
 import { pathToFileURL } from 'url';
-import { CssDocumentParser } from './css-document-parser';
+import { CssDocumentParser } from './cssDocumentParser';
 import { getPathsToIgnore } from '../configurationHelper';
 
 export class SassFileToCompletionItemsParser {

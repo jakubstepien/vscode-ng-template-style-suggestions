@@ -1,9 +1,9 @@
 import * as vscode from 'vscode';
-import { globalCssProvider } from './providers/global-css-provider';
-import { TempDocumentContentProvider } from './document-content-providers/temp-document-content-provider';
+import { globalStylesProvider } from './providers/globalStylesprovider';
+import { TempDocumentContentProvider } from './documentContentProviders/tempDocumentContentProvider';
 import { registerCommands, commands, registerConfigurationChangeEvents } from './configurationHelper';
-import { angularConfigProvider } from './providers/angular-config-provider';
-import { isInputtingClass } from './parsers/input-position-parser';
+import { angularConfigProvider } from './providers/angularConfigProvider';
+import { isInputtingClass } from './parsers/inputPositionParser';
 import { activeDocumentStyleProvider } from './providers/activeDocumentStyleProvider';
 
 
@@ -32,7 +32,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 // this method is called when your extension is deactivated
 export function deactivate() {
-	globalCssProvider?.dispose();
+	globalStylesProvider?.dispose();
 	activeDocumentStyleProvider?.dispose();
 	angularConfigProvider?.dispose();
 }

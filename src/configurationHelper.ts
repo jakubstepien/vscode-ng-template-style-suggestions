@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { activeDocumentStyleProvider } from './providers/activeDocumentStyleProvider';
-import { angularConfigProvider } from './providers/angular-config-provider';
-import { globalCssProvider } from './providers/global-css-provider';
+import { angularConfigProvider } from './providers/angularConfigProvider';
+import { globalStylesProvider } from './providers/globalStylesprovider';
 
 const extensionString = 'angularSassSuggestions';
 const resetCacheCommand = 'resetCache';
@@ -29,7 +29,7 @@ export const commands = {
         const projectName = config.get(projectConfigurationName) as string;
 
         await angularConfigProvider.init(projectName);
-        globalCssProvider.init();
+        globalStylesProvider.init();
         activeDocumentStyleProvider.init(config.get(cacheActiveEditorSuggestions) as boolean);
     })
 };

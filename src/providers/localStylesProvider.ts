@@ -1,11 +1,11 @@
 import * as vscode from 'vscode';
-import { SassFileToCompletionItemsParser } from '../parsers/scss-file-to-completion-items-parser';
-import { DecoratorByNameMatchingStrategy } from '../parsers/typescript-component-decorator/decorator-by-name-matching-strategy';
-import { DecoratorByPositionMatchingStrategy } from '../parsers/typescript-component-decorator/decorator-by-position-matching-strategy';
-import { TypescriptComponentDecoratorParser } from '../parsers/typescript-component-decorator/typescript-component-decorator-parser';
+import { SassFileToCompletionItemsParser } from '../parsers/scssParser';
+import { DecoratorByNameMatchingStrategy } from '../parsers/typescriptComponentDecorator/decoratorByNameMatchingStrategy';
+import { DecoratorByPositionMatchingStrategy } from '../parsers/typescriptComponentDecorator/decoratorByPositionMtchingStrategy';
+import { TypescriptComponentDecoratorParser } from '../parsers/typescriptComponentDecorator/typescriptComponentDecoratorParser';
 import { addMaps, isDocumentInlineTemplate } from '../utils/common';
 
-export class LocalCssProvider {
+export class LocalStylesProvider {
     private static sortingPrefix: string = 'style1';
     private isInline: boolean;
 
@@ -54,7 +54,7 @@ export class LocalCssProvider {
     }
 
     private setItemsOrder(items: Map<string, vscode.CompletionItem>) {
-        items.forEach(x => x.sortText = LocalCssProvider.sortingPrefix + x.label);
+        items.forEach(x => x.sortText = LocalStylesProvider.sortingPrefix + x.label);
     }
 
     /**

@@ -4,7 +4,7 @@ import * as assert from 'assert';
 // as well as import your extension to test it
 import * as vscode from 'vscode';
 import { deactivate } from '../../../../extension';
-import { SassFileToCompletionItemsParser } from '../../../../parsers/scss-file-to-completion-items-parser';
+import { SassFileToCompletionItemsParser } from '../../../../parsers/scssParser';
 import { activateExtension } from '../test-utils';
 // import * as myExtension from '../../extension';
 

@@ -1,10 +1,10 @@
 import * as vscode from 'vscode';
-import { SassFileToCompletionItemsParser } from '../parsers/scss-file-to-completion-items-parser';
+import { SassFileToCompletionItemsParser } from '../parsers/scssParser';
 import { Observable, Subject, Subscription, switchMap, finalize, startWith, of } from 'rxjs';
-import { angularConfigProvider } from './angular-config-provider';
+import { angularConfigProvider } from './angularConfigProvider';
 import { getPathsToIgnore } from '../configurationHelper';
 
-class GlobalCssProvider {
+class GlobalStylesProvider {
     private static sortingPrefix: string = 'style2:';
     private subs = new Subscription();
     private mainStylesUris$: Observable<string[]> = of([]);
@@ -42,7 +42,7 @@ class GlobalCssProvider {
             const pathsToIgnore = getPathsToIgnore();
             var parser = new SassFileToCompletionItemsParser();
             const items = await parser.getCompletitionItemsFromFile(stylePaths);
-            items.forEach(x => x.sortText = GlobalCssProvider.sortingPrefix + x.label);
+            items.forEach(x => x.sortText = GlobalStylesProvider.sortingPrefix + x.label);
             return items;
         }
         catch (e) {
@@ -56,4 +56,4 @@ class GlobalCssProvider {
     }
 }
 
-export const globalCssProvider = new GlobalCssProvider();
+export const globalStylesProvider = new GlobalStylesProvider();

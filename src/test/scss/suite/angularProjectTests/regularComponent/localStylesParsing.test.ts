@@ -1,7 +1,7 @@
 import * as assert from 'assert';
 import * as vscode from 'vscode';
 import { activateExtension } from '../../test-utils';
-import { LocalCssProvider } from '../../../../../providers/local-css-provider';
+import { LocalStylesProvider } from '../../../../../providers/localStylesProvider';
 
 suite('Regular component local class suggestions', () => {
 	const contex = activateExtension();
@@ -40,7 +40,7 @@ async function getCompletitionItems() {
 
 	const doc = await vscode.workspace.openTextDocument(files[0]);
 	const position = new vscode.Position(0, 0);
-	const provider = new LocalCssProvider(doc, position);
+	const provider = new LocalStylesProvider(doc, position);
 	const items = await provider.getCompletitionItems();
 	return items;
 }
