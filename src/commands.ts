@@ -2,10 +2,11 @@ import * as vscode from 'vscode';
 import { angularConfigProvider } from './providers/angular-config-provider';
 import { globalCssProvider } from './providers/global-css-provider';
 
-const extensionString = 'angularSassSuggestions';
-const resetCacheCommand = 'resetCache';
-const projectConfigurationName = 'project';
-const extraWatchersConfigurationName = 'extraFileWatchers';
+export const extensionString = 'angularSassSuggestions';
+export const resetCacheCommand = 'resetCache';
+export const projectConfigurationName = 'project';
+export const extraWatchersConfigurationName = 'extraFileWatchers';
+export const ignorePathsForSuggestions = 'ignorePathsForSuggestions'
 
 class Command<TArg> {
     constructor(private command: string, private callback: (arg: TArg) => any, thisArg?: any) {
@@ -63,6 +64,9 @@ export function registerConfigurationChangeEvents(content: vscode.ExtensionConte
         resetIfAffected(e, `${extensionString}.${projectConfigurationName}`, () => {
             commands.resetCache.invoke();
         });
+        resetIfAffected(e, `${extensionString}.${ignorePathsForSuggestions}`, () => {
+            commands.resetCache.invoke();
+        });
 
         resetIfAffected(e, `${extensionString}.${extraWatchersConfigurationName}`, () => {
             setupWatchers();
@@ -74,4 +78,20 @@ export function registerConfigurationChangeEvents(content: vscode.ExtensionConte
             cleanupWatchers();
         }
     });
+}
+
+type RegexFlag = 'd' | 'g' | 'i' | 'm' | 's' | 'u' | 'y';
+interface PathRegex {
+    regex: string,
+    flags: RegexFlag[];
+}
+
+export function getPathsToIgnore(): RegExp[] {
+    const configPaths = vscode.workspace.getConfiguration(extensionString).get(ignorePathsForSuggestions) as PathRegex[];
+    const regexes: RegExp[] = [];
+    for (const config of configPaths) {
+        const regex = new RegExp(config.regex, config.flags.join());
+        regexes.push(regex);
+    }
+    return regexes;
 }

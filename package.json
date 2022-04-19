@@ -28,13 +28,13 @@
         "title": "Angular Sass Suggestions: Reset cache"
       }
     ],
-    "configuration":[
+    "configuration": [
       {
         "title": "Angular Sass classes suggestions",
         "properties": {
           "angularSassSuggestions.project": {
             "type": "string",
-            "description": "Name of the project from angular.json get global styles from, if empty uses value of defaultProject from angular.json"           
+            "description": "Name of the project from the angular.json to get global styles from, if empty uses value of defaultProject from the angular.json"
           },
           "angularSassSuggestions.extraFileWatchers": {
             "type": "array",
@@ -42,6 +42,37 @@
               "type": "string"
             },
             "description": "List of file patterns whose change should trigger cache reset"
+          },
+          "angularSassSuggestions.ignorePathsForSuggestions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "title": "RegEx object",
+              "additionalProperties": false,
+              "properties": {
+                "regex": {
+                  "title": "RegEx string",
+                  "type": "string"
+                },
+                "flags": {
+                  "type": "array",
+                  "title": "RegEx flags",
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "d",
+                      "g",
+                      "i",
+                      "m",
+                      "s",
+                      "u",
+                      "y"
+                    ]
+                  }
+                }
+              }
+            },
+            "description": "Hide suggestion if file name matches one of these regexes"
           }
         }
       }
@@ -54,7 +85,7 @@
     "package": "webpack --mode production --devtool hidden-source-map",
     "watch": "tsc -watch -p ./",
     "test-compile": "tsc -p ./"
-},
+  },
   "devDependencies": {
     "@types/glob": "^7.2.0",
     "@types/mocha": "^9.0.0",
@@ -74,6 +105,7 @@
   "dependencies": {
     "rxjs": "^7.5.5",
     "sass": "^1.50.0",
+    "source-map-js": "1.0.2",
     "typescript": "^4.5.4",
     "uuid": "^8.3.2",
     "vscode-css-languageservice": "^5.1.12"

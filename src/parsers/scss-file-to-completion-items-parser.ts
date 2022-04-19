@@ -1,18 +1,14 @@
 import * as vscode from 'vscode';
 import * as sass from 'sass';
 import { TempDocumentContentProvider } from '../document-content-providers/temp-document-content-provider';
-import { getCSSLanguageService, LanguageService } from "vscode-css-languageservice";
-import { mapDocument } from '../utils/css-language-service-utils';
 import { addMaps } from '../utils/common';
 import { angularConfigProvider } from '../providers/angular-config-provider';
 import { pathToFileURL } from 'url';
+import { CssDocumentParser } from './css-document-parser';
 
 export class SassFileToCompletionItemsParser {
 
-    private static classRegex = /[.]([\w-]+)/g;
-    private cssLanguageService: LanguageService;
-    constructor() {
-        this.cssLanguageService = getCSSLanguageService();
+    constructor(private pathsToIgnore: RegExp[] = []) {
     }
 
     public async getCompletitionItems(data: string[], file: boolean): Promise<Map<string, vscode.CompletionItem>> {
@@ -49,30 +45,16 @@ export class SassFileToCompletionItemsParser {
 
         return {
             loadPaths: paths,
-            sourceMap: true,
-            sourceMapIncludeSources: true,
-            logger: {
-                debug(msg, opt){
-                    console.log(msg, opt);
-                },
-                warn(msg, opt){
-                    console.log(msg,opt);
-                }
-            },
+            sourceMap: this.pathsToIgnore.length > 0,
+            sourceMapIncludeSources: false,
             importers: [{
-                canonicalize(url, opt) {
-                    return new URL('');
+                //https://sass-lang.com/documentation/js-api/interfaces/FileImporter
+                findFileUrl(url) {
+                    if (!url.startsWith('~')) {
+                        return null;
+                    }
+                    return new URL(url.substring(1), pathToFileURL(nodePath + '/'));
                 },
-                load(url){
-                    return null;
-                }
-                // //https://sass-lang.com/documentation/js-api/interfaces/FileImporter
-                // findFileUrl(url) {
-                //     if (!url.startsWith('~')) {
-                //         return null;
-                //     }
-                //     return new URL(url.substring(1), pathToFileURL(nodePath + '/'));
-                // },
             }],
         };
     }
@@ -95,38 +77,19 @@ export class SassFileToCompletionItemsParser {
 
     private async getSymbolsFromSassResult(sassResults: sass.CompileResult[]) {
         const documents = sassResults.map(x => TempDocumentContentProvider.getDocument(x.css));
-        const documentPromises = documents.map(async tempDocPromise => {
+        const documentPromises = documents.map(async (tempDocPromise, index) => {
             let uuid = '';
             try {
-                const tempDocument = await tempDocPromise;
-                uuid = tempDocument[1];
-                return await this.getDocDefinitions(tempDocument[0]);
+                const [doc, docUuid] = await tempDocPromise;
+                uuid = docUuid;
+
+                const cssParser = new CssDocumentParser(sassResults[index].sourceMap, this.pathsToIgnore);
+                return cssParser.getCompletitionItems(doc);
             }
             finally {
                 TempDocumentContentProvider.freeDocument(uuid);
             }
         });
         return (await Promise.all(documentPromises)).reduce((a, b) => addMaps(a, b, true));
-    }
-
-    private async getDocDefinitions(doc: vscode.TextDocument) {
-        const mappedDoc = mapDocument(doc);
-        const style = this.cssLanguageService.parseStylesheet(mappedDoc);
-        const symbols = this.cssLanguageService.findDocumentSymbols(mappedDoc, style);
-
-        const definitions = new Map<string, vscode.CompletionItem>();
-        symbols.forEach(x => {
-            var matches = x.name.match(SassFileToCompletionItemsParser.classRegex);
-            matches?.forEach(x => {
-                const text = x.substring(1);
-                if (definitions.has(text) === false) {
-                    definitions.set(text, new vscode.CompletionItem({
-                        label: text,
-                    }, vscode.CompletionItemKind.Field));
-                }
-            });
-        });
-
-        return definitions;
-    }
+    }    
 }

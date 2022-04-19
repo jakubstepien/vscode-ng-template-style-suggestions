@@ -2,6 +2,8 @@ import * as vscode from 'vscode';
 import { SassFileToCompletionItemsParser } from '../parsers/scss-file-to-completion-items-parser';
 import { Observable, Subject, Subscription, switchMap, finalize, startWith, of } from 'rxjs';
 import { angularConfigProvider } from './angular-config-provider';
+import { getPathsToIgnore } from '../commands';
+
 class GlobalCssProvider {
     private static sortingPrefix: string = 'style2:';
     private subs = new Subscription();
@@ -37,7 +39,8 @@ class GlobalCssProvider {
 
     private async initItems(stylePaths: string[]) {
         try {
-            var parser = new SassFileToCompletionItemsParser();
+            const pathsToIgnore = getPathsToIgnore();
+            var parser = new SassFileToCompletionItemsParser(pathsToIgnore);
             const items = await parser.getCompletitionItemsFromFile(stylePaths);
             items.forEach(x => x.sortText = GlobalCssProvider.sortingPrefix + x.label);
             return items;
