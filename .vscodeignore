@@ -11,3 +11,4 @@ vsc-extension-quickstart.md
 doc/**
 node_modules/**
 webpack.config.js
+test/test-project/**

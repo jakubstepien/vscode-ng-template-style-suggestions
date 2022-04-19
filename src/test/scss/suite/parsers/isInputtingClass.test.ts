@@ -3,7 +3,7 @@ import * as assert from 'assert';
 // You can import and use all API from the 'vscode' module
 // as well as import your extension to test it
 import * as vscode from 'vscode';
-import { isInputtingClass } from '../../../parsers/input-position-parser';
+import { isInputtingClass } from '../../../../parsers/input-position-parser';
 // import * as myExtension from '../../extension';
 
 suite('isInputtingClass non bound attributes Test Suite', () => {

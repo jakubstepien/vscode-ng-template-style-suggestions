@@ -49,15 +49,31 @@ export class SassFileToCompletionItemsParser {
 
         return {
             loadPaths: paths,
-            importers: [{
-                //https://sass-lang.com/documentation/js-api/interfaces/FileImporter
-                findFileUrl(url) {
-                    if (!url.startsWith('~')) {
-                        return null;
-                    }
-                    return new URL(url.substring(1), pathToFileURL(nodePath + '/'));
+            sourceMap: true,
+            sourceMapIncludeSources: true,
+            logger: {
+                debug(msg, opt){
+                    console.log(msg, opt);
                 },
-            }]
+                warn(msg, opt){
+                    console.log(msg,opt);
+                }
+            },
+            importers: [{
+                canonicalize(url, opt) {
+                    return new URL('');
+                },
+                load(url){
+                    return null;
+                }
+                // //https://sass-lang.com/documentation/js-api/interfaces/FileImporter
+                // findFileUrl(url) {
+                //     if (!url.startsWith('~')) {
+                //         return null;
+                //     }
+                //     return new URL(url.substring(1), pathToFileURL(nodePath + '/'));
+                // },
+            }],
         };
     }
 

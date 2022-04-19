@@ -18,15 +18,16 @@
 			"preLaunchTask": "${defaultBuildTask}"
 		},
 		{
-			"name": "Extension Tests",
+			"name": "Extension SCSS Tests",
 			"type": "extensionHost",
 			"request": "launch",
 			"args": [
+				"${workspaceFolder}/src/test/scss/test-project",
 				"--extensionDevelopmentPath=${workspaceFolder}",
-				"--extensionTestsPath=${workspaceFolder}/out/test/suite/index"
+				"--extensionTestsPath=${workspaceFolder}/out/test/scss/suite/index"
 			],
 			"outFiles": [
-				"${workspaceFolder}/out/test/**/*.js"
+				"${workspaceFolder}/out/test/scss/**/*.js"
 			],
 			"preLaunchTask": "${defaultBuildTask}"
 		}
