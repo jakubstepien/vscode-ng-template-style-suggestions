@@ -1,0 +1,14 @@
+@import './local-imported';
+
+.inline-component-class {
+    text-decoration: underline;
+    .inline-component-nested-class {
+        border: 1px solid #000;
+    }
+}
+
+@for $i from 1 through 2 {
+    .inline-component-dynamic-class-#{$i} {
+      background-color: red;
+    }
+  }

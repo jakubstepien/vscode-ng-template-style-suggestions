@@ -13,3 +13,18 @@ export function activateExtension(): vscode.ExtensionContext | null {
     });
     return contex;
 }
+
+export function waitForAngularLanguageService(){
+    suiteSetup(async () => {
+		const angLS = vscode.extensions.getExtension('angular.ng-template');
+		await angLS?.activate;
+
+		// waiting some time for angular language service to start
+		// todo find some way to check if it's loaded
+		await new Promise(res => {
+			setTimeout(() => {
+				res(true);	
+			},10000);
+		});
+	});
+}

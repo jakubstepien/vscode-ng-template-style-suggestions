@@ -3,32 +3,32 @@ import * as vscode from 'vscode';
 import { activateExtension } from '../../test-utils';
 import { LocalStylesProvider } from '../../../../../providers/localStylesProvider';
 
-suite('Regular component local class suggestions', () => {
+suite('SCSS Regular component local class suggestions', () => {
 	const contex = activateExtension();
 
-	test('regular component inline style class', async () => {
+	test('inline style class', async () => {
 		const items = await getCompletitionItems();
 		assert.strictEqual(true, items.has('regular-component-inline-class'));
 	});
 
-	test('regular component style url classes', async () => {
+	test('style url classes', async () => {
 		const items = await getCompletitionItems();
 		assert.strictEqual(true, items.has('regular-component-class'));
 		assert.strictEqual(true, items.has('regular-component-another-decorator-url-class'));
 	});
 
-	test('regular component style url has nested classes', async () => {
+	test('style url has nested classes', async () => {
 		const items = await getCompletitionItems();
 		assert.strictEqual(true, items.has('regular-component-nested-class'));
 	});
 
-	test('regular component style url has dynamic classes', async () => {
+	test('style url has dynamic classes', async () => {
 		const items = await getCompletitionItems();
 		assert.strictEqual(true, items.has('regular-component-dynamic-class-1'));
 		assert.strictEqual(true, items.has('regular-component-dynamic-class-2'));
 	});
 
-	test('regular component style url has imported class', async () => {
+	test('style url has imported class', async () => {
 		const items = await getCompletitionItems();
 		assert.strictEqual(true, items.has('regular-component-local-imported-class'));
 	});
