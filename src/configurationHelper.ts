@@ -1,12 +1,14 @@
 import * as vscode from 'vscode';
+import { activeDocumentStyleProvider } from './providers/activeDocumentStyleProvider';
 import { angularConfigProvider } from './providers/angular-config-provider';
 import { globalCssProvider } from './providers/global-css-provider';
 
-export const extensionString = 'angularSassSuggestions';
-export const resetCacheCommand = 'resetCache';
-export const projectConfigurationName = 'project';
-export const extraWatchersConfigurationName = 'extraFileWatchers';
-export const ignorePathsForSuggestions = 'ignorePathsForSuggestions'
+const extensionString = 'angularSassSuggestions';
+const resetCacheCommand = 'resetCache';
+const projectConfigurationName = 'project';
+const extraWatchersConfigurationName = 'extraFileWatchers';
+const ignorePathsForSuggestions = 'ignorePathsForSuggestions';
+const cacheActiveEditorSuggestions = 'cacheActiveEditorSuggestions';
 
 class Command<TArg> {
     constructor(private command: string, private callback: (arg: TArg) => any, thisArg?: any) {
@@ -28,6 +30,7 @@ export const commands = {
 
         await angularConfigProvider.init(projectName);
         globalCssProvider.init();
+        activeDocumentStyleProvider.init(config.get(cacheActiveEditorSuggestions) as boolean);
     })
 };
 
@@ -65,6 +68,9 @@ export function registerConfigurationChangeEvents(content: vscode.ExtensionConte
             commands.resetCache.invoke();
         });
         resetIfAffected(e, `${extensionString}.${ignorePathsForSuggestions}`, () => {
+            commands.resetCache.invoke();
+        });
+        resetIfAffected(e, `${extensionString}.${cacheActiveEditorSuggestions}`, () => {
             commands.resetCache.invoke();
         });
 

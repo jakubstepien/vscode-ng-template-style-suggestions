@@ -1,11 +1,10 @@
 import * as vscode from 'vscode';
 import { globalCssProvider } from './providers/global-css-provider';
 import { TempDocumentContentProvider } from './document-content-providers/temp-document-content-provider';
-import { LocalCssProvider } from './providers/local-css-provider';
-import { addMaps } from './utils/common';
-import { registerCommands, commands, registerConfigurationChangeEvents } from './commands';
+import { registerCommands, commands, registerConfigurationChangeEvents } from './configurationHelper';
 import { angularConfigProvider } from './providers/angular-config-provider';
 import { isInputtingClass } from './parsers/input-position-parser';
+import { activeDocumentStyleProvider } from './providers/activeDocumentStyleProvider';
 
 
 export function activate(context: vscode.ExtensionContext) {
@@ -24,11 +23,7 @@ export function activate(context: vscode.ExtensionContext) {
 				return [];
 			}
 
-			const globalCompletitionItems = await globalCssProvider.getGlobalCompletitionItems();
-			const localCompletitionItems = await new LocalCssProvider(document, position).getCompletitionItems();
-
-			const allItems = addMaps(localCompletitionItems, globalCompletitionItems, true);
-			return Array.from(allItems).map(x => x[1]);
+			return await activeDocumentStyleProvider.getCompletitionItems(document, position);
 		}
 	}));
 
@@ -38,5 +33,6 @@ export function activate(context: vscode.ExtensionContext) {
 // this method is called when your extension is deactivated
 export function deactivate() {
 	globalCssProvider?.dispose();
+	activeDocumentStyleProvider?.dispose();
 	angularConfigProvider?.dispose();
 }

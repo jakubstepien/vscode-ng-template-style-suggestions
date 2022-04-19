@@ -3,15 +3,14 @@ import { SassFileToCompletionItemsParser } from '../parsers/scss-file-to-complet
 import { DecoratorByNameMatchingStrategy } from '../parsers/typescript-component-decorator/decorator-by-name-matching-strategy';
 import { DecoratorByPositionMatchingStrategy } from '../parsers/typescript-component-decorator/decorator-by-position-matching-strategy';
 import { TypescriptComponentDecoratorParser } from '../parsers/typescript-component-decorator/typescript-component-decorator-parser';
-import { addMaps } from '../utils/common';
+import { addMaps, isDocumentInlineTemplate } from '../utils/common';
 
 export class LocalCssProvider {
     private static sortingPrefix: string = 'style1';
     private isInline: boolean;
 
     constructor(private document: vscode.TextDocument, private position: vscode.Position) {
-        //if angular language service is installed and template is inlined path will point to virtual doc with .ts.html extension
-        this.isInline = document.uri.path.endsWith(".ts.html");
+        this.isInline = isDocumentInlineTemplate(document);
     }
 
     public async getCompletitionItems(): Promise<Map<string, vscode.CompletionItem>> {

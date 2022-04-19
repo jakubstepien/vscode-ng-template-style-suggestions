@@ -5,10 +5,12 @@ import { addMaps } from '../utils/common';
 import { angularConfigProvider } from '../providers/angular-config-provider';
 import { pathToFileURL } from 'url';
 import { CssDocumentParser } from './css-document-parser';
+import { getPathsToIgnore } from '../configurationHelper';
 
 export class SassFileToCompletionItemsParser {
-
-    constructor(private pathsToIgnore: RegExp[] = []) {
+    private pathsToIgnore: RegExp[];
+    constructor() {
+        this.pathsToIgnore = getPathsToIgnore();
     }
 
     public async getCompletitionItems(data: string[], file: boolean): Promise<Map<string, vscode.CompletionItem>> {
