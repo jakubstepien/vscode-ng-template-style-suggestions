@@ -3,19 +3,19 @@ import { activeDocumentStyleProvider } from './providers/activeDocumentStyleProv
 import { angularConfigProvider } from './providers/angularConfigProvider';
 import { globalStylesProvider } from './providers/globalStylesprovider';
 
-const extensionString = 'angularSassSuggestions';
-const resetCacheCommand = 'resetCache';
-const projectConfigurationName = 'project';
-const extraWatchersConfigurationName = 'extraFileWatchers';
-const ignorePathsForSuggestions = 'ignorePathsForSuggestions';
-const cacheActiveEditorSuggestions = 'cacheActiveEditorSuggestions';
+export const extensionString = 'angularSassSuggestions';
+export const resetCacheCommand = 'resetCache';
+export const projectConfigurationName = 'project';
+export const extraWatchersConfigurationName = 'extraFileWatchers';
+export const ignorePathsForSuggestions = 'ignorePathsForSuggestions';
+export const cacheActiveEditorSuggestions = 'cacheActiveEditorSuggestions';
 
 class Command<TArg> {
     constructor(private command: string, private callback: (arg: TArg) => any, thisArg?: any) {
     }
 
     public invoke(arg: TArg) {
-        vscode.commands.executeCommand(this.command, arg);
+        return vscode.commands.executeCommand(this.command, arg);
     }
 
     public register() {
@@ -39,10 +39,10 @@ export function registerCommands(context: vscode.ExtensionContext) {
 }
 
 export function registerConfigurationChangeEvents(content: vscode.ExtensionContext) {
-    const resetIfAffected = (e: vscode.ConfigurationChangeEvent, option: string, callback: () => void) => {
+    const resetIfAffected = async (e: vscode.ConfigurationChangeEvent, option: string, callback: () => void) => {
         const affected = e.affectsConfiguration(option);
         if (affected) {
-            callback();
+            await callback();
         }
     };
 
@@ -63,18 +63,18 @@ export function registerConfigurationChangeEvents(content: vscode.ExtensionConte
     };
     setupWatchers();
 
-    const configurationWatcher = vscode.workspace.onDidChangeConfiguration(e => {
-        resetIfAffected(e, `${extensionString}.${projectConfigurationName}`, () => {
+    const configurationWatcher = vscode.workspace.onDidChangeConfiguration(async e => {
+        await resetIfAffected(e, `${extensionString}.${projectConfigurationName}`, async () => {
+            await commands.resetCache.invoke();
+        });
+        await resetIfAffected(e, `${extensionString}.${ignorePathsForSuggestions}`, async () => {
             commands.resetCache.invoke();
         });
-        resetIfAffected(e, `${extensionString}.${ignorePathsForSuggestions}`, () => {
-            commands.resetCache.invoke();
-        });
-        resetIfAffected(e, `${extensionString}.${cacheActiveEditorSuggestions}`, () => {
-            commands.resetCache.invoke();
+        await resetIfAffected(e, `${extensionString}.${cacheActiveEditorSuggestions}`, async () => {
+            await commands.resetCache.invoke();
         });
 
-        resetIfAffected(e, `${extensionString}.${extraWatchersConfigurationName}`, () => {
+        await resetIfAffected(e, `${extensionString}.${extraWatchersConfigurationName}`, async () => {
             setupWatchers();
         });
     });
@@ -94,6 +94,10 @@ interface PathRegex {
 
 export function getPathsToIgnore(): RegExp[] {
     const configPaths = vscode.workspace.getConfiguration(extensionString).get(ignorePathsForSuggestions) as PathRegex[];
+    if (configPaths == null) {
+        return [];
+    }
+
     const regexes: RegExp[] = [];
     for (const config of configPaths) {
         const regex = new RegExp(config.regex, config.flags.join());

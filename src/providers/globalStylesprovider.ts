@@ -39,7 +39,6 @@ class GlobalStylesProvider {
 
     private async initItems(stylePaths: string[]) {
         try {
-            const pathsToIgnore = getPathsToIgnore();
             var parser = new SassFileToCompletionItemsParser();
             const items = await parser.getCompletitionItemsFromFile(stylePaths);
             items.forEach(x => x.sortText = GlobalStylesProvider.sortingPrefix + x.label);

@@ -1,19 +1,12 @@
 import * as assert from 'assert';
 import * as vscode from 'vscode';
-import { activateExtension, waitForAngularLanguageService } from '../../test-utils';
+import { activateExtension, getDocumentForInlineStylesTests  } from '../../test-utils';
 import { LocalStylesProvider } from '../../../../../providers/localStylesProvider';
 
 const templatePosition = new vscode.Position(22, 14);
 
 suite('SCSS Inline component local class suggestions', () => {
 	const contex = activateExtension();
-	
-	waitForAngularLanguageService();
-
-	test('position not in template', async () => {
-		const items = await getCompletitionItems(new vscode.Position(0, 0));
-		assert.strictEqual(false, items.has('inline-component-inline-class'));
-	});
 
 	test('does not suggest style from other inline component', async () => {
 		const items = await getCompletitionItems();
@@ -49,23 +42,9 @@ suite('SCSS Inline component local class suggestions', () => {
 });
 
 async function getCompletitionItems(position: vscode.Position | null = null) {
-	const files = await vscode.workspace.findFiles('**/src/app/inline-component/inline-component.component.ts');
-	assert.strictEqual(1, files.length);
+	const doc = await  getDocumentForInlineStylesTests('**/src/app/inline-component/inline-component.component.ts', templatePosition);
 
-	const originalDoc = await vscode.workspace.openTextDocument(files[0]);
-	const originalUri = originalDoc.uri.toString();
-
-	//without this vscode wont find angular-embedded-content
-	await vscode.commands.executeCommand('vscode.executeCompletionItemProvider', originalDoc.uri, templatePosition);
-
-	const vdocUri = vscode.Uri.file(encodeURIComponent(originalUri) + '.html')
-		.with({scheme: 'angular-embedded-content', authority: 'html'});
-
-	const doc = await vscode.workspace.openTextDocument(vdocUri);
-	if(position == null){
-		position = templatePosition;
-	}
-	const provider = new LocalStylesProvider(doc, position);
+	const provider = new LocalStylesProvider(doc, templatePosition);
 	const items = await provider.getCompletitionItems();
 	return items;
 }
