@@ -1,0 +1,5 @@
+@import './local-imported.css';
+
+.inline-component-class {
+    text-decoration: underline;
+}

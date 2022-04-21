@@ -31,6 +31,10 @@ async function main() {
             {
                 testsPath: path.resolve(__dirname, './sass/suite/index'),
                 projectPath: path.resolve(__dirname, '../../src/test/sass/test-project')
+            },
+            {
+                testsPath: path.resolve(__dirname, './css/suite/index'),
+                projectPath: path.resolve(__dirname, '../../src/test/css/test-project')
             }
         ];
 
