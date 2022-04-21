@@ -18,6 +18,19 @@
 			"preLaunchTask": "${defaultBuildTask}"
 		},
 		{
+			"name": "Extension Common Tests",
+			"type": "extensionHost",
+			"request": "launch",
+			"args": [
+				"--extensionDevelopmentPath=${workspaceFolder}",
+				"--extensionTestsPath=${workspaceFolder}/out/test/commonTests/suite/index"
+			],
+			"outFiles": [
+				"${workspaceFolder}/out/test/commonTests/**/*.js"
+			],
+			"preLaunchTask": "${defaultBuildTask}"
+		},
+		{
 			"name": "Extension SCSS Tests",
 			"type": "extensionHost",
 			"request": "launch",
