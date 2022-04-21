@@ -16,6 +16,8 @@
 		// "noUnusedParameters": true,  /* Report errors on unused parameters. */
 	},
 	"exclude": [
-		"src/test/scss/test-project/**"
+		"src/test/scss/test-project/**",
+		"src/test/sass/test-project/**",
+		"src/test/css/test-project/**",
 	]
 }

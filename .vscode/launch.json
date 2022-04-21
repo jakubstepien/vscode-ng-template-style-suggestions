@@ -30,6 +30,20 @@
 				"${workspaceFolder}/out/test/scss/**/*.js"
 			],
 			"preLaunchTask": "${defaultBuildTask}"
+		},
+		{
+			"name": "Extension SASS Tests",
+			"type": "extensionHost",
+			"request": "launch",
+			"args": [
+				"${workspaceFolder}/src/test/sass/test-project",
+				"--extensionDevelopmentPath=${workspaceFolder}",
+				"--extensionTestsPath=${workspaceFolder}/out/test/sass/suite/index"
+			],
+			"outFiles": [
+				"${workspaceFolder}/out/test/sass/**/*.js"
+			],
+			"preLaunchTask": "${defaultBuildTask}"
 		}
 	]
 }

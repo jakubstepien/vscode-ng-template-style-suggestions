@@ -1,0 +1,14 @@
+@import './local-imported'
+
+.regular-component-class
+    text-decoration: underline
+    .regular-component-nested-class
+        border: 1px solid #000
+    
+
+
+@for $i from 1 through 2 
+    .regular-component-dynamic-class-#{$i}
+      background-color: red
+    
+  
