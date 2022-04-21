@@ -40,7 +40,13 @@ export class LocalStylesProvider {
             { data: result[1], file: false }
         ];
 
-        const parsed = toParse.map(x => parser.getCompletitionItems(x.data, x.file));
+        const parsed = toParse.map(x => {
+            return x.file
+                ? parser.getCompletitionItemsFromFile(x.data)
+                //https://angular.io/guide/component-styles#non-css-style-files
+                //Style strings added to the @Component.styles array must be written in CSS
+                : parser.getCompletitionItemsFromCode(x.data, 'css');
+        });
         for (const parseResult$ of parsed) {
             const res = await parseResult$;
             if (res == null) {

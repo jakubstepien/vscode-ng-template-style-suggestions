@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as sass from 'sass';
 import { TempDocumentContentProvider } from '../documentContentProviders/tempDocumentContentProvider';
-import { addMaps } from '../utils/common';
+import { addMaps, StyleSyntax } from '../utils/common';
 import { angularConfigProvider } from '../providers/angularConfigProvider';
 import { pathToFileURL } from 'url';
 import { CssDocumentParser } from './cssDocumentParser';
@@ -9,17 +9,9 @@ import { getPathsToIgnore } from '../configurationHelper';
 
 export class SassFileToCompletionItemsParser {
     private pathsToIgnore: RegExp[];
+
     constructor() {
         this.pathsToIgnore = getPathsToIgnore();
-    }
-
-    public async getCompletitionItems(data: string[], file: boolean): Promise<Map<string, vscode.CompletionItem>> {
-        if (file) {
-            return this.getCompletitionItemsFromFile(data);
-        }
-        else {
-            return this.getCompletitionItemsCode(data);
-        }
     }
 
     public async getCompletitionItemsFromFile(styleUrls: string[]): Promise<Map<string, vscode.CompletionItem>> {
@@ -38,7 +30,7 @@ export class SassFileToCompletionItemsParser {
         }
     }
 
-    private getSassOptions(): sass.Options<"sync"> | undefined {
+    private getSassOptions(): sass.Options<"sync"> {
         const nodePath = angularConfigProvider.configSnapshot?.nodeModulesLocation;
         const paths = angularConfigProvider.configSnapshot?.includePaths ?? [];
         if (nodePath != null) {
@@ -61,13 +53,15 @@ export class SassFileToCompletionItemsParser {
         };
     }
 
-    public async getCompletitionItemsCode(styles: string[]): Promise<Map<string, vscode.CompletionItem>> {
+    public async getCompletitionItemsFromCode(styles: string[], syntax: StyleSyntax): Promise<Map<string, vscode.CompletionItem>> {
         if (styles == null || styles.length === 0) {
             return new Map();
         }
 
         try {
-            const results = await Promise.all(styles.map(x => sass.compileString(x, this.getSassOptions())));
+            const options: sass.StringOptions<"sync"> = this.getSassOptions();
+            options.syntax = this.mapSyntax(syntax)
+            const results = await Promise.all(styles.map(x => sass.compileString(x, options)));
             const items = await this.getSymbolsFromSassResult(results);
             return items;
         }
@@ -93,5 +87,9 @@ export class SassFileToCompletionItemsParser {
             }
         });
         return (await Promise.all(documentPromises)).reduce((a, b) => addMaps(a, b, true));
-    }    
+    }
+
+    private mapSyntax(syntax: StyleSyntax): sass.Syntax {
+        return syntax === 'sass' ? 'indented' : syntax ?? 'scss';
+    }
 }

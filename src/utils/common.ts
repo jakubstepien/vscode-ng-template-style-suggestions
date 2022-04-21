@@ -1,5 +1,7 @@
 import * as vscode from 'vscode';
 
+export type StyleSyntax = 'scss' | 'css' | 'sass';
+
 export function addMaps<K, V>(a: Map<K, V>, b: Map<K, V>, mutateFirst: boolean = false) {
     if (mutateFirst === false) {
         a = new Map<K, V>(a);

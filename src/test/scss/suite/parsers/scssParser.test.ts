@@ -8,7 +8,7 @@ import { SassFileToCompletionItemsParser } from '../../../../parsers/scssParser'
 import { activateExtension } from '../test-utils';
 // import * as myExtension from '../../extension';
 
-suite('SassFileToCompletionItemsParser Test Suite', () => {
+suite('ScssFileToCompletionItemsParser Test Suite', () => {
     const contex = activateExtension();
 
     test('scss string to completition items', async () => {
@@ -30,7 +30,7 @@ suite('SassFileToCompletionItemsParser Test Suite', () => {
 			}
 		`;
         const parser = new SassFileToCompletionItemsParser();
-        const items = await parser.getCompletitionItemsCode([scss]);
+        const items = await parser.getCompletitionItemsFromCode([scss], 'scss');
 
         assert.strictEqual(3, items.size);
         assert.strictEqual(true, items.has('foo'));

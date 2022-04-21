@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import { BehaviorSubject } from "rxjs";
 import path = require('path');
+import { StyleSyntax } from '../utils/common';
 
 export type AngularConfig = {
     path: string,
@@ -9,6 +10,7 @@ export type AngularConfig = {
     styles: string[]
     includePaths: string[];
     nodeModulesLocation: string;
+    syntax: StyleSyntax;
 };
 
 const angularJsonPath = '**/*angular.json';
@@ -64,6 +66,7 @@ class AngularConfigProvider {
                 styles: [],
                 includePaths: [],
                 nodeModulesLocation: path.join(mainDir, 'node_modules'),
+                syntax: 'scss'
             };
         }
         const options = configObj.projects[projectName].architect.build.options;
@@ -82,6 +85,7 @@ class AngularConfigProvider {
             styles: styles,
             includePaths: includePathsFs,
             nodeModulesLocation: path.join(mainDir, 'node_modules'),
+            syntax: options.inlineStyleLanguage,
         };
     }
 
