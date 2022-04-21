@@ -89,7 +89,8 @@
     "webpack-dev": "webpack --mode development --watch",
     "package": "webpack --mode production --devtool hidden-source-map",
     "watch": "tsc -watch -p ./",
-    "test-compile": "tsc -p ./"
+    "test-compile": "tsc -p ./",
+    "all-tests": "npm run test-compile && node ./out/test/runAllTests.js"
   },
   "devDependencies": {
     "@types/glob": "^7.2.0",
