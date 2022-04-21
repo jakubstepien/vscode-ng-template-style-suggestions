@@ -1,9 +1,9 @@
 import * as assert from 'assert';
 import * as vscode from 'vscode';
-import { activateExtension, resetGlobalStyles, setGlobalStyle, setOtherGlobalStyle } from '../../test-utils';
-import { LocalStylesProvider } from '../../../../../providers/localStylesProvider';
-import { globalStylesProvider } from '../../../../../providers/globalStylesprovider';
-import { extensionString, ignorePathsForSuggestions } from '../../../../../configurationHelper';
+import { activateExtension, resetGlobalStyles, setGlobalStyle, setOtherGlobalStyle } from '../test-utils';
+import { LocalStylesProvider } from '../../../../providers/localStylesProvider';
+import { globalStylesProvider } from '../../../../providers/globalStylesprovider';
+import { extensionString, ignorePathsForSuggestions } from '../../../../configurationHelper';
 
 suite('SCSS Regular component global class suggestions', () => {
 	const contex = activateExtension();
@@ -106,8 +106,21 @@ suite('SCSS Regular component global class suggestions', () => {
 		assert.strictEqual(true, items.has('global-class'));
 		assert.strictEqual(false, items.has('btn-danger'));
 	});
-	
 
+	
+	test('global style import imports css file', async () => {
+
+		await setGlobalStyle(`
+			@import "../node_modules/bootstrap/dist/css/bootstrap.css";
+			.global-class {
+				color: red;
+			}
+		`);
+
+		const items = await getCompletitionItems();
+		assert.strictEqual(true, items.has('global-class'));
+		assert.strictEqual(false, items.has('btn-danger'));
+	});
 
 	teardown(async () => {
 		await resetGlobalStyles();

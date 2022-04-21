@@ -1,9 +1,9 @@
 import * as assert from 'assert';
 import * as vscode from 'vscode';
-import { activateExtension } from '../../test-utils';
-import { LocalStylesProvider } from '../../../../../providers/localStylesProvider';
+import { activateExtension } from '../test-utils';
+import { LocalStylesProvider } from '../../../../providers/localStylesProvider';
 
-suite('SCSS Regular component local class suggestions', () => {
+suite('SASS Regular component local class suggestions', () => {
 	const contex = activateExtension();
 
 	test('inline style class', async () => {

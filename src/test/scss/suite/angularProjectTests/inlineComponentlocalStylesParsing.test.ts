@@ -1,7 +1,7 @@
 import * as assert from 'assert';
 import * as vscode from 'vscode';
-import { activateExtension, getDocumentForInlineStylesTests  } from '../../test-utils';
-import { LocalStylesProvider } from '../../../../../providers/localStylesProvider';
+import { activateExtension, getDocumentForInlineStylesTests  } from '../test-utils';
+import { LocalStylesProvider } from '../../../../providers/localStylesProvider';
 
 const templatePosition = new vscode.Position(22, 14);
 
