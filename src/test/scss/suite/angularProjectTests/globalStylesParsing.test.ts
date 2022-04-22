@@ -109,9 +109,9 @@ suite('SCSS Regular component global class suggestions', () => {
 
 	
 	test('global style import imports css file', async () => {
-
 		await setGlobalStyle(`
 			@import "../node_modules/bootstrap/dist/css/bootstrap.css";
+			@import "temp";
 			.global-class {
 				color: red;
 			}
@@ -119,7 +119,7 @@ suite('SCSS Regular component global class suggestions', () => {
 
 		const items = await getCompletitionItems();
 		assert.strictEqual(true, items.has('global-class'));
-		assert.strictEqual(false, items.has('btn-danger'));
+		assert.strictEqual(true, items.has('btn-danger'));
 	});
 
 	teardown(async () => {

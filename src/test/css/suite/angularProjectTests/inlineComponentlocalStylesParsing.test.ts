@@ -24,10 +24,10 @@ suite('CSS Inline component local class suggestions', () => {
 		assert.strictEqual(true, items.has('inline-component-another-decorator-url-class'));
 	});
 
-	// test('style url has imported class', async () => {
-	// 	const items = await getCompletitionItems();
-	// 	assert.strictEqual(true, items.has('inline-component-local-imported-class'));
-	// });
+	test('style url has imported class', async () => {
+		const items = await getCompletitionItems();
+		assert.strictEqual(true, items.has('inline-component-local-imported-class'));
+	});
 });
 
 async function getCompletitionItems(position: vscode.Position | null = null) {

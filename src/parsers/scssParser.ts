@@ -20,7 +20,12 @@ export class SassFileToCompletionItemsParser {
         }
 
         try {
-            const results = await Promise.all(styleUrls.map(x => sass.compile(x, this.getSassOptions())));
+            const results = await Promise.all(styleUrls.map(x => {
+                return {
+                    style: sass.compile(x, this.getSassOptions()),
+                    path: x
+                };
+            }));
             const items = await this.getSymbolsFromSassResult(results);
             return items;
         }
@@ -60,7 +65,7 @@ export class SassFileToCompletionItemsParser {
 
         try {
             const options: sass.StringOptions<"sync"> = this.getSassOptions();
-            options.syntax = this.mapSyntax(syntax)
+            options.syntax = this.mapSyntax(syntax);
             const results = await Promise.all(styles.map(x => sass.compileString(x, options)));
             const items = await this.getSymbolsFromSassResult(results);
             return items;
@@ -71,21 +76,34 @@ export class SassFileToCompletionItemsParser {
         }
     }
 
-    private async getSymbolsFromSassResult(sassResults: sass.CompileResult[]) {
-        const documents = sassResults.map(x => TempDocumentContentProvider.getDocument(x.css));
-        const documentPromises = documents.map(async (tempDocPromise, index) => {
+    private async getSymbolsFromSassResult(sassResults: sass.CompileResult[]): Promise<Map<string, vscode.CompletionItem>>;
+    private async getSymbolsFromSassResult(sassResults: { style: sass.CompileResult, path: string }[]): Promise<Map<string, vscode.CompletionItem>>;
+    private async getSymbolsFromSassResult(sassResults: { style: sass.CompileResult, path: string }[] | sass.CompileResult[]): Promise<Map<string, vscode.CompletionItem>> {
+        const stylesUnified = sassResults.map(x => {
+            if ('path' in x) {
+                return x;
+            }
+            return { style: x, path: '' };
+        });
+        const styles = stylesUnified.filter(x => x.style.css != null && x.style.css !== '');
+        const documentPromises = styles.map(async (style, index) => {
             let uuid = '';
             try {
-                const [doc, docUuid] = await tempDocPromise;
+
+                const [doc, docUuid] = await TempDocumentContentProvider.getDocument(style.style.css);
                 uuid = docUuid;
 
-                const cssParser = new CssDocumentParser(sassResults[index].sourceMap, this.pathsToIgnore);
-                return cssParser.getCompletitionItems(doc);
+                const cssParser = new CssDocumentParser(stylesUnified[index].style.sourceMap, this.pathsToIgnore);
+                return cssParser.getCompletitionItems(style.path, doc);
             }
             finally {
                 TempDocumentContentProvider.freeDocument(uuid);
             }
         });
+        if(documentPromises.length === 0){
+            return new Map();
+        }
+
         return (await Promise.all(documentPromises)).reduce((a, b) => addMaps(a, b, true));
     }
 

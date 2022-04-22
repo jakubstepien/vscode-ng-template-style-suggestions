@@ -17,10 +17,10 @@ suite('CSS Regular component local class suggestions', () => {
 		assert.strictEqual(true, items.has('regular-component-another-decorator-url-class'));
 	});
 
-	// test('style url has imported class', async () => {
-	// 	const items = await getCompletitionItems();
-	// 	assert.strictEqual(true, items.has('regular-component-local-imported-class'));
-	// });
+	test('style url has imported class', async () => {
+		const items = await getCompletitionItems();
+		assert.strictEqual(true, items.has('regular-component-local-imported-class'));
+	});
 });
 
 async function getCompletitionItems() {

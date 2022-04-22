@@ -119,7 +119,7 @@ suite('SASS Regular component global class suggestions', () => {
 
 		const items = await getCompletitionItems();
 		assert.strictEqual(true, items.has('global-class'));
-		assert.strictEqual(false, items.has('btn-danger'));
+		assert.strictEqual(true, items.has('btn-danger'));
 	});
 
 	teardown(async () => {

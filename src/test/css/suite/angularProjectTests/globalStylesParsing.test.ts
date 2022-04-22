@@ -18,34 +18,22 @@ suite('CSS Regular component global class suggestions', () => {
 		assert.strictEqual(true, items.has('global-class'));
 	});
 
-	// test('global style import other file', async () => {
-	// 	await setOtherGlobalStyle(`
-	// 		.global-imported-class {
-	// 			color: red;
-	// 		}
-	// 	`);
-	// 	await setGlobalStyle(`
-	// 		@import './other-global-style.css';
-	// 		.global-class {
-	// 			color: red;
-	// 		}
-	// 	`);
-	// 	const items = await getCompletitionItems();
-	// 	assert.strictEqual(true, items.has('global-class'));
-	// 	assert.strictEqual(true, items.has('global-imported-class'));
-	// });
-
-	// test('global style import from node modules exact path with extension', async () => {
-	// 	await setGlobalStyle(`
-	// 		@import "../node_modules/bootstrap/scss/bootstrap.css";
-	// 		.global-class {
-	// 			color: red;
-	// 		}
-	// 	`);
-	// 	const items = await getCompletitionItems();
-	// 	assert.strictEqual(true, items.has('global-class'));
-	// 	assert.strictEqual(true, items.has('btn-danger'));
-	// });
+	test('global style import other file', async () => {
+		await setOtherGlobalStyle(`
+			.global-imported-class {
+				color: red;
+			}
+		`);
+		await setGlobalStyle(`
+			@import './other-global-style.css';
+			.global-class {
+				color: red;
+			}
+		`);
+		const items = await getCompletitionItems();
+		assert.strictEqual(true, items.has('global-class'));
+		assert.strictEqual(true, items.has('global-imported-class'));
+	});
 
 	test('global style import skips ignored path', async () => {
 		const opt = await vscode.workspace.getConfiguration(extensionString)
@@ -54,7 +42,7 @@ suite('CSS Regular component global class suggestions', () => {
 		]);
 		
 		await setGlobalStyle(`
-			@import "../node_modules/bootstrap/scss/bootstrap.css";
+			@import "../node_modules/bootstrap/scss/bootstrap.scss";
 			.global-class {
 				color: red;
 			}
@@ -63,6 +51,21 @@ suite('CSS Regular component global class suggestions', () => {
 		const items = await getCompletitionItems();
 		assert.strictEqual(true, items.has('global-class'));
 		assert.strictEqual(false, items.has('btn-danger'));
+	});
+
+	
+	test('global style import imports css file', async () => {
+		await setGlobalStyle(`
+			@import "../node_modules/bootstrap/dist/css/bootstrap.css";
+			@import "temp";
+			.global-class {
+				color: red;
+			}
+		`);
+
+		const items = await getCompletitionItems();
+		assert.strictEqual(true, items.has('global-class'));
+		assert.strictEqual(true, items.has('btn-danger'));
 	});
 
 	teardown(async () => {
