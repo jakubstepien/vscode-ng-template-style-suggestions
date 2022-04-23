@@ -1,10 +1,13 @@
-import * as less from 'less';
 import * as vscode from 'vscode';
 import * as path from 'path';
 import { StyleSyntax } from "../common";
 import { angularConfigProvider } from '../providers/angularConfigProvider';
 import { StyleCompilationResult, StyleCompiler } from "./styleCompiler";
 
+//normal import of less breaks release build with error 'window is not defined'
+//less-node works but regular import shows typescript errors so I use require
+//less-node also causes webpack warnings 'Critical dependency: the request of a dependency is an expression'
+const less = require('less/lib/less-node').default as LessStatic;
 
 export class LessCompiler implements StyleCompiler {
 
