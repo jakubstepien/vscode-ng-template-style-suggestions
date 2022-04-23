@@ -2,7 +2,7 @@ import * as assert from 'assert';
 import * as vscode from 'vscode';
 import { activateExtension, resetGlobalStyles, setGlobalStyle, setOtherGlobalStyle } from '../test-utils';
 import { LocalStylesProvider } from '../../../../providers/localStylesProvider';
-import { globalStylesProvider } from '../../../../providers/globalStylesprovider';
+import { globalStylesProvider } from '../../../../providers/globalStylesProvider';
 import { extensionString, ignorePathsForSuggestions } from '../../../../configurationHelper';
 
 suite('SASS Regular component global class suggestions', () => {
@@ -19,9 +19,9 @@ suite('SASS Regular component global class suggestions', () => {
 			
 		`);
 		const items = await getCompletitionItems();
-		assert.strictEqual(true, items.has('global-class'));
-		assert.strictEqual(true, items.has('global-class-nested'));
-		assert.strictEqual(true, items.has('global-another'));
+		assert.strictEqual(true, items.class.has('global-class'));
+		assert.strictEqual(true, items.class.has('global-class-nested'));
+		assert.strictEqual(true, items.class.has('global-another'));
 	});
 
 	test('global style import other file', async () => {
@@ -37,8 +37,8 @@ suite('SASS Regular component global class suggestions', () => {
 			
 		`);
 		const items = await getCompletitionItems();
-		assert.strictEqual(true, items.has('global-class'));
-		assert.strictEqual(true, items.has('global-imported-class'));
+		assert.strictEqual(true, items.class.has('global-class'));
+		assert.strictEqual(true, items.class.has('global-imported-class'));
 	});
 
 	test('global style import from node modules tilde', async () => {
@@ -49,8 +49,8 @@ suite('SASS Regular component global class suggestions', () => {
 			
 		`);
 		const items = await getCompletitionItems();
-		assert.strictEqual(true, items.has('global-class'));
-		assert.strictEqual(true, items.has('btn-danger'));
+		assert.strictEqual(true, items.class.has('global-class'));
+		assert.strictEqual(true, items.class.has('btn-danger'));
 	});
 
 	test('global style import from node modules tilde with extension', async () => {
@@ -61,8 +61,8 @@ suite('SASS Regular component global class suggestions', () => {
 			
 		`);
 		const items = await getCompletitionItems();
-		assert.strictEqual(true, items.has('global-class'));
-		assert.strictEqual(true, items.has('btn-danger'));
+		assert.strictEqual(true, items.class.has('global-class'));
+		assert.strictEqual(true, items.class.has('btn-danger'));
 	});
 
 	test('global style import from node modules exact path', async () => {
@@ -73,8 +73,8 @@ suite('SASS Regular component global class suggestions', () => {
 			
 		`);
 		const items = await getCompletitionItems();
-		assert.strictEqual(true, items.has('global-class'));
-		assert.strictEqual(true, items.has('btn-danger'));
+		assert.strictEqual(true, items.class.has('global-class'));
+		assert.strictEqual(true, items.class.has('btn-danger'));
 	});
 
 	test('global style import from node modules exact path with extension', async () => {
@@ -85,8 +85,8 @@ suite('SASS Regular component global class suggestions', () => {
 			
 		`);
 		const items = await getCompletitionItems();
-		assert.strictEqual(true, items.has('global-class'));
-		assert.strictEqual(true, items.has('btn-danger'));
+		assert.strictEqual(true, items.class.has('global-class'));
+		assert.strictEqual(true, items.class.has('btn-danger'));
 	});
 
 	test('global style import skips ignored path', async () => {
@@ -103,8 +103,8 @@ suite('SASS Regular component global class suggestions', () => {
 		`);
 
 		const items = await getCompletitionItems();
-		assert.strictEqual(true, items.has('global-class'));
-		assert.strictEqual(false, items.has('btn-danger'));
+		assert.strictEqual(true, items.class.has('global-class'));
+		assert.strictEqual(false, items.class.has('btn-danger'));
 	});
 
 	
@@ -118,12 +118,14 @@ suite('SASS Regular component global class suggestions', () => {
 		`);
 
 		const items = await getCompletitionItems();
-		assert.strictEqual(true, items.has('global-class'));
-		assert.strictEqual(true, items.has('btn-danger'));
+		assert.strictEqual(true, items.class.has('global-class'));
+		assert.strictEqual(true, items.class.has('btn-danger'));
 	});
 
 	teardown(async () => {
 		await resetGlobalStyles();
+		const opt = await vscode.workspace.getConfiguration(extensionString);
+		await opt.update(ignorePathsForSuggestions, []);
 	});
 });
 

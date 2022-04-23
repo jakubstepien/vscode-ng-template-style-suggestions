@@ -2,12 +2,12 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import { BehaviorSubject } from "rxjs";
 import path = require('path');
-import { StyleSyntax } from '../utils/common';
+import { StyleSyntax } from '../common';
 
 export type AngularConfig = {
     path: string,
     project: string,
-    styles: string[]
+    stylesUrls: string[]
     includePaths: string[];
     nodeModulesLocation: string;
     syntax: StyleSyntax;
@@ -63,10 +63,10 @@ class AngularConfigProvider {
             return {
                 path: fsPath,
                 project: projectName,
-                styles: [],
+                stylesUrls: [],
                 includePaths: [],
                 nodeModulesLocation: path.join(mainDir, 'node_modules'),
-                syntax: 'scss'
+                syntax: StyleSyntax.scss
             };
         }
         const options = configObj.projects[projectName].architect.build.options;
@@ -82,7 +82,7 @@ class AngularConfigProvider {
         return {
             path: fsPath,
             project: projectName,
-            styles: styles,
+            stylesUrls: styles,
             includePaths: includePathsFs,
             nodeModulesLocation: path.join(mainDir, 'node_modules'),
             syntax: options.inlineStyleLanguage,

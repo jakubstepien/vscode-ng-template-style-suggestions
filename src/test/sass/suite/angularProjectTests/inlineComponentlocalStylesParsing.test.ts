@@ -10,34 +10,34 @@ suite('SASS Inline component local class suggestions', () => {
 
 	test('does not suggest style from other inline component', async () => {
 		const items = await getCompletitionItems();
-		assert.strictEqual(false, items.has('inline-component-class-other-one'));
+		assert.strictEqual(false, items.class.has('inline-component-class-other-one'));
 	});
 
 	test('inline style class', async () => {
 		const items = await getCompletitionItems();
-		assert.strictEqual(true, items.has('inline-component-inline-class'));
+		assert.strictEqual(true, items.class.has('inline-component-inline-class'));
 	});
 
 	test('style url classes', async () => {
 		const items = await getCompletitionItems();
-		assert.strictEqual(true, items.has('inline-component-class'));
-		assert.strictEqual(true, items.has('inline-component-another-decorator-url-class'));
+		assert.strictEqual(true, items.class.has('inline-component-class'));
+		assert.strictEqual(true, items.class.has('inline-component-another-decorator-url-class'));
 	});
 
 	test('style url has nested classes', async () => {
 		const items = await getCompletitionItems();
-		assert.strictEqual(true, items.has('inline-component-nested-class'));
+		assert.strictEqual(true, items.class.has('inline-component-nested-class'));
 	});
 
 	test('style url has dynamic classes', async () => {
 		const items = await getCompletitionItems();
-		assert.strictEqual(true, items.has('inline-component-dynamic-class-1'));
-		assert.strictEqual(true, items.has('inline-component-dynamic-class-2'));
+		assert.strictEqual(true, items.class.has('inline-component-dynamic-class-1'));
+		assert.strictEqual(true, items.class.has('inline-component-dynamic-class-2'));
 	});
 
 	test('style url has imported class', async () => {
 		const items = await getCompletitionItems();
-		assert.strictEqual(true, items.has('inline-component-local-imported-class'));
+		assert.strictEqual(true, items.class.has('inline-component-local-imported-class'));
 	});
 });
 

@@ -1,9 +1,10 @@
 import * as vscode from 'vscode';
-import { SassFileToCompletionItemsParser } from '../parsers/scssParser';
-import { DecoratorByNameMatchingStrategy } from '../parsers/typescriptComponentDecorator/decoratorByNameMatchingStrategy';
-import { DecoratorByPositionMatchingStrategy } from '../parsers/typescriptComponentDecorator/decoratorByPositionMtchingStrategy';
-import { TypescriptComponentDecoratorParser } from '../parsers/typescriptComponentDecorator/typescriptComponentDecoratorParser';
-import { addMaps, isDocumentInlineTemplate } from '../utils/common';
+import { DecoratorByNameMatchingStrategy } from '../parsers/typescript/componentDecorator/decoratorByNameMatchingStrategy';
+import { DecoratorByPositionMatchingStrategy } from '../parsers/typescript/componentDecorator/decoratorByPositionMatchingStrategy';
+import { ComponentDecoratorParser } from '../parsers/typescript/componentDecorator/componentDecoratorParser';
+import { addMaps, getDefaultParsingResult, isDocumentInlineTemplate, joinSuggestions, StyleSuggestionsByType, StyleSyntax } from '../common';
+import { StylesToCompletitionItemsParser } from '../parsers/stylesToCompletitionItemsParser';
+import { angularConfigProvider } from './angularConfigProvider';
 
 export class LocalStylesProvider {
     private static sortingPrefix: string = 'style1';
@@ -13,13 +14,13 @@ export class LocalStylesProvider {
         this.isInline = isDocumentInlineTemplate(document);
     }
 
-    public async getCompletitionItems(): Promise<Map<string, vscode.CompletionItem>> {
+    public async getCompletitionItems(): Promise<StyleSuggestionsByType> {
         const doc = await this.getMatchingDoc('.ts');
         if (doc == null) {
             return this.getCompletitionItemsBasedOnDirectory();
         }
 
-        const tsParser = new TypescriptComponentDecoratorParser(doc);
+        const tsParser = new ComponentDecoratorParser(doc);
 
         //if is inline I cannot use name since there may by multiple components in file and they won't have template url
         //so I look for decorator which contains cursor position
@@ -32,8 +33,8 @@ export class LocalStylesProvider {
             return this.getCompletitionItemsBasedOnDirectory();
         }
 
-        const items = new Map<string, vscode.CompletionItem>();
-        const parser = new SassFileToCompletionItemsParser();
+        const items: StyleSuggestionsByType = getDefaultParsingResult();
+        const parser = new StylesToCompletitionItemsParser();
 
         const toParse = [
             { data: result[0], file: true },
@@ -45,37 +46,37 @@ export class LocalStylesProvider {
                 ? parser.getCompletitionItemsFromFile(x.data)
                 //https://angular.io/guide/component-styles#non-css-style-files
                 //Style strings added to the @Component.styles array must be written in CSS
-                : parser.getCompletitionItemsFromCode(x.data, 'css');
+                : parser.getCompletitionItemsFromCode(x.data, StyleSyntax.css);
         });
         for (const parseResult$ of parsed) {
             const res = await parseResult$;
             if (res == null) {
                 continue;
             }
-            addMaps(items, res, true);
+            joinSuggestions(items, res, true);
         }
 
         this.setItemsOrder(items);
         return items;
     }
 
-    private setItemsOrder(items: Map<string, vscode.CompletionItem>) {
-        items.forEach(x => x.sortText = LocalStylesProvider.sortingPrefix + x.label);
+    private setItemsOrder(items: StyleSuggestionsByType) {
+        items.class.forEach(x => x.sortText = LocalStylesProvider.sortingPrefix + x.label);
+        items.id.forEach(x => x.sortText = LocalStylesProvider.sortingPrefix + x.label);
     }
 
     /**
      * Fallback method to search from css file matched by name if matching from decorator fails
      */
-    private async getCompletitionItemsBasedOnDirectory(): Promise<Map<string, vscode.CompletionItem>> {
-        const doc = await this.getMatchingDoc('.scss')
-            ?? await this.getMatchingDoc(".sass")
-            ?? await this.getMatchingDoc(".css");
+    private async getCompletitionItemsBasedOnDirectory(): Promise<StyleSuggestionsByType> {
+        const syntax = angularConfigProvider.configSnapshot?.syntax ?? 'scss';
+        const doc = await this.getMatchingDoc('.' + syntax);
 
         if (doc == null) {
-            return new Map();
+            return getDefaultParsingResult();
         }
 
-        const parser = new SassFileToCompletionItemsParser();
+        const parser = new StylesToCompletitionItemsParser();
         const items = await parser.getCompletitionItemsFromFile([doc.uri.fsPath]);
         this.setItemsOrder(items);
         return items;

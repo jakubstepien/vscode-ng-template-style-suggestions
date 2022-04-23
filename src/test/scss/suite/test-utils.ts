@@ -13,7 +13,7 @@ export function activateExtension(): vscode.ExtensionContext | null {
         await commands.resetCache.invoke();
 
         const opt = await vscode.workspace.getConfiguration(extensionString)
-        opt.update(ignorePathsForSuggestions, null);
+        await opt.update(ignorePathsForSuggestions, null);
     });
 
     suiteTeardown(() => {
@@ -59,9 +59,9 @@ export async function resetGlobalStyles() {
 
 export async function setGlobalStyle(text: string) {
     await setFile(mainStylePattern, text);
-    await new Promise(res => {
-        setTimeout(() => res(true), 300);
-    })
+    // await new Promise(res => {
+    //     setTimeout(() => res(true), 300);
+    // });
 }
 
 export async function setOtherGlobalStyle(text: string) {

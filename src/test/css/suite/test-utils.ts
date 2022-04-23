@@ -59,9 +59,9 @@ export async function resetGlobalStyles() {
 
 export async function setGlobalStyle(text: string) {
     await setFile(mainStylePattern, text);
-    await new Promise(res => {
-        setTimeout(() => res(true), 300);
-    })
+    // await new Promise(res => {
+    //     setTimeout(() => res(true), 300);
+    // })
 }
 
 export async function setOtherGlobalStyle(text: string) {

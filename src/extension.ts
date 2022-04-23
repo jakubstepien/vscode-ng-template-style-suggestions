@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { globalStylesProvider } from './providers/globalStylesprovider';
+import { globalStylesProvider } from './providers/globalStylesProvider';
 import { TempDocumentContentProvider } from './documentContentProviders/tempDocumentContentProvider';
 import { registerCommands, commands, registerConfigurationChangeEvents } from './configurationHelper';
 import { angularConfigProvider } from './providers/angularConfigProvider';
@@ -23,7 +23,7 @@ export function activate(context: vscode.ExtensionContext) {
 				return [];
 			}
 
-			return await activeDocumentStyleProvider.getCompletitionItems(document, position);
+			return await activeDocumentStyleProvider.getCompletitionItems(document, position, 'class');
 		}
 	}));
 

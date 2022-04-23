@@ -8,18 +8,18 @@ suite('CSS Regular component local class suggestions', () => {
 
 	test('inline style class', async () => {
 		const items = await getCompletitionItems();
-		assert.strictEqual(true, items.has('regular-component-inline-class'));
+		assert.strictEqual(true, items.class.has('regular-component-inline-class'));
 	});
 
 	test('style url classes', async () => {
 		const items = await getCompletitionItems();
-		assert.strictEqual(true, items.has('regular-component-class'));
-		assert.strictEqual(true, items.has('regular-component-another-decorator-url-class'));
+		assert.strictEqual(true, items.class.has('regular-component-class'));
+		assert.strictEqual(true, items.class.has('regular-component-another-decorator-url-class'));
 	});
 
 	test('style url has imported class', async () => {
 		const items = await getCompletitionItems();
-		assert.strictEqual(true, items.has('regular-component-local-imported-class'));
+		assert.strictEqual(true, items.class.has('regular-component-local-imported-class'));
 	});
 });
 

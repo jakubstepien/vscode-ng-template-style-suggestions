@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { LocalStylesProvider } from './localStylesProvider';
-import { globalStylesProvider } from './globalStylesprovider';
-import { addMaps, isDocumentInlineTemplate } from '../utils/common';
+import { globalStylesProvider } from './globalStylesProvider';
+import { addMaps, extractCompletitionItemsFromGrouped, isDocumentInlineTemplate, joinSuggestions, SuggestionType } from '../common';
 import { Subject } from 'rxjs';
 
 class ActiveDocumentStyleProvider {
@@ -12,17 +12,17 @@ class ActiveDocumentStyleProvider {
     init(cacheEnabled: boolean) {
         this.dispose();
         this.onDestroy = new Subject<void>();
-        
+
         this.cacheEnabled = cacheEnabled;
         this.items = null;
-        
+
         const handler = vscode.window.onDidChangeActiveTextEditor((e) => {
             this.items = null;
         });
         this.onDestroy.subscribe(x => handler.dispose());
     }
 
-    async getCompletitionItems(document: vscode.TextDocument, position: vscode.Position) {
+    async getCompletitionItems(document: vscode.TextDocument, position: vscode.Position, type: SuggestionType) {
         //if its inline template I cannot cache whole results because position could have changed to different decorator -> component
         if (isDocumentInlineTemplate(document)) {
             this.items = null;
@@ -33,9 +33,8 @@ class ActiveDocumentStyleProvider {
                 const globalCompletitionItems = await globalStylesProvider.getGlobalCompletitionItems();
                 const localCompletitionItems = await new LocalStylesProvider(document, position).getCompletitionItems();
 
-                const combinedMaps = addMaps(localCompletitionItems, globalCompletitionItems, true);
-                const allItems = Array.from(combinedMaps).map(x => x[1]);
-                res(allItems);
+                const combinedResults = joinSuggestions(localCompletitionItems, globalCompletitionItems, false);
+                res(extractCompletitionItemsFromGrouped(combinedResults, type));
             });
 
         }

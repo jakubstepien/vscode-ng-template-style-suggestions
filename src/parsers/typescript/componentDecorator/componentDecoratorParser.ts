@@ -5,7 +5,7 @@ import * as path from 'path';
 import { ComponentDecoratorData, componentDecoratorName, IDecoratorMatchingStrategy, StyleParseResult, stylesPropertyName, styleUrlsPropertyName } from './common';
 
 
-export class TypescriptComponentDecoratorParser {
+export class ComponentDecoratorParser {
     private sourceFile: ts.SourceFile | null;
 
     constructor(private doc: vscode.TextDocument) {
@@ -79,7 +79,7 @@ export class TypescriptComponentDecoratorParser {
             const propExpr = prop as ts.PropertyAssignment;
             const name = propExpr.name?.getText();
             if (name === styleUrlsPropertyName || name === stylesPropertyName) {
-                TypescriptComponentDecoratorParser.parseDecoratorStringArrayValues(propExpr, componentDecorator, name);
+                ComponentDecoratorParser.parseDecoratorStringArrayValues(propExpr, componentDecorator, name);
             }
             else {
                 const value = propExpr.initializer.getText();
