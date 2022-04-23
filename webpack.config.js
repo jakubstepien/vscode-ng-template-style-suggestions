@@ -4,6 +4,20 @@
 
 const path = require('path');
 const webpack = require('webpack');
+const TerserPlugin = require('terser-webpack-plugin');
+const LicensePlugin = require('webpack-license-plugin')
+
+const licenseFileTransform = (packages) => {
+  return packages.map(x => {
+    return `${x.name}
+author: ${x.author}
+version: ${x.version}
+repository: ${x.repository}
+license: ${x.license}
+${x.licenseText}
+`
+  }).join('\n--------------------\n');
+}
 
 /**@type {import('webpack').Configuration}*/
 const config = {
@@ -21,6 +35,18 @@ const config = {
   devtool: 'source-map',
   externals: {
     vscode: 'commonjs vscode' // the vscode-module is created on-the-fly and must be excluded. Add other modules that cannot be webpack'ed, 📖 -> https://webpack.js.org/configuration/externals/
+  },
+  optimization: {
+    minimize: true,
+    minimizer: [
+      new TerserPlugin({
+        parallel: true,
+        terserOptions: {
+          // https://github.com/webpack-contrib/terser-webpack-plugin#terseroptions
+        },
+        extractComments: false
+      }),
+    ],
   },
   resolve: {
     // support reading TypeScript and JavaScript files, 📖 -> https://github.com/TypeStrong/ts-loader
@@ -47,8 +73,18 @@ const config = {
         ]
       }
     ],
-    //https://github.com/microsoft/TypeScript/issues/39436
-    noParse: [require.resolve('typescript/lib/typescript.js')],
-  }
+    noParse: [
+      //https://github.com/microsoft/TypeScript/issues/39436
+      require.resolve('typescript/lib/typescript.js'),
+    ],
+  },
+  plugins: [
+    new LicensePlugin({
+      additionalFiles: {
+        'extension.js.LICENSE.txt': licenseFileTransform
+      },
+      outputFilename: 'extension.js.LICENSE.txt'
+    })
+  ]
 };
 module.exports = config;
