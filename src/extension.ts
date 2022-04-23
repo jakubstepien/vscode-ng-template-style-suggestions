@@ -3,7 +3,7 @@ import { globalStylesProvider } from './providers/globalStylesProvider';
 import { TempDocumentContentProvider } from './documentContentProviders/tempDocumentContentProvider';
 import { registerCommands, commands, registerConfigurationChangeEvents } from './configurationHelper';
 import { angularConfigProvider } from './providers/angularConfigProvider';
-import { isInputtingClass } from './parsers/inputPositionParser';
+import { getInputtingSymbol } from './parsers/inputPositionParser';
 import { activeDocumentStyleProvider } from './providers/activeDocumentStyleProvider';
 
 
@@ -19,11 +19,13 @@ export function activate(context: vscode.ExtensionContext) {
 			const lineStart = new vscode.Position(position.line, 0);
 			const range = new vscode.Range(lineStart, position);
 			const text = document.getText(range);
-			if (isInputtingClass(text) === false) {
+
+			const symbolToSuggest = getInputtingSymbol(text);
+			if (symbolToSuggest == null) {
 				return [];
 			}
 
-			return await activeDocumentStyleProvider.getCompletitionItems(document, position, 'class');
+			return await activeDocumentStyleProvider.getCompletitionItems(document, position, symbolToSuggest);
 		}
 	}));
 

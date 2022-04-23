@@ -17,6 +17,10 @@ suite('cssFileToCompletionItemsParser Test Suite', () => {
 				border: 1px solid red;
 			}
 
+            #id {
+                color: red;
+            }
+
 			.test {
 				display: flex;
 			}
@@ -25,8 +29,10 @@ suite('cssFileToCompletionItemsParser Test Suite', () => {
         const items = await parser.getCompletitionItemsFromCode([css], StyleSyntax.css);
 
         assert.strictEqual(2, items.class.size);
+        assert.strictEqual(1, items.id.size);
         assert.strictEqual(true, items.class.has('foo'));
         assert.strictEqual(true, items.class.has('test'));
         assert.strictEqual(false, items.class.has('id'));
+        assert.strictEqual(true, items.id.has('id'));
     });
 });

@@ -1,16 +1,22 @@
-const regex = /(\[?(?:(?:class)|(?:ngClass))\]?)="([^"]*)$/;
+import { SuggestionType } from "../common";
 
-export function isInputtingClass(text: string) {
+const regex = /(\[?(?:(?:class)|(?:ngClass)|(?:id))\]?)="([^"]*)$/i;
+
+export function getInputtingSymbol(text: string) : SuggestionType | null {
     const matches = text.match(regex);
     if (matches == null) {
-        return false;
+        return null;
     }
 
     const attribute = matches[1];
     const isExpression = attribute.startsWith('[');
+    
+    const type: SuggestionType = attribute.toLowerCase().indexOf('id') !== -1
+        ? 'id'
+        : 'class';
     //if it isn't expression value will be regular string so show all suggestions
     if (isExpression === false) {
-        return true;
+        return type;
     }
 
     const value = matches[2];
@@ -20,5 +26,5 @@ export function isInputtingClass(text: string) {
             isInString = !isInString;
         }
     }
-    return isInString;
+    return isInString ? type : null;
 }

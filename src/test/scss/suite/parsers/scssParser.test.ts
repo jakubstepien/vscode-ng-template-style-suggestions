@@ -33,9 +33,11 @@ suite('ScssFileToCompletionItemsParser Test Suite', () => {
         const items = await parser.getCompletitionItemsFromCode([scss], StyleSyntax.scss);
 
         assert.strictEqual(3, items.class.size);
+        assert.strictEqual(1, items.id.size);
         assert.strictEqual(true, items.class.has('foo'));
         assert.strictEqual(true, items.class.has('bar'));
         assert.strictEqual(true, items.class.has('test'));
         assert.strictEqual(false, items.class.has('id'));
+        assert.strictEqual(true, items.id.has('id'));
     });
 });

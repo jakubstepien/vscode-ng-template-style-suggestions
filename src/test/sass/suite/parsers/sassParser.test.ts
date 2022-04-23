@@ -26,9 +26,11 @@ suite('SassFileToCompletionItemsParser Test Suite', () => {
         const items = await parser.getCompletitionItemsFromCode([sass], StyleSyntax.sass);
 
         assert.strictEqual(3, items.class.size);
+        assert.strictEqual(1, items.id.size);
         assert.strictEqual(true, items.class.has('foo'));
         assert.strictEqual(true, items.class.has('bar'));
         assert.strictEqual(true, items.class.has('test'));
         assert.strictEqual(false, items.class.has('id'));
+        assert.strictEqual(true, items.id.has('id'));
     });
 });
