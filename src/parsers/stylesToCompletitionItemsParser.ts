@@ -3,8 +3,9 @@ import * as path from 'path';
 
 import { getDefaultParsingResult, StyleSuggestions, StyleSuggestionsByType, StyleSyntax } from "../common";
 import { TempDocumentContentProvider } from '../documentContentProviders/tempDocumentContentProvider';
-import { SassCompiler, StyleCompilationResult } from '../compilers/sassCompiler';
+import { SassCompiler } from '../compilers/sassCompiler';
 import { CssParser } from './css/cssParser';
+import { getStyleCompiler, StyleCompilationResult } from '../compilers/styleCompiler';
 
 export class StylesToCompletitionItemsParser {
 
@@ -45,9 +46,11 @@ export class StylesToCompletitionItemsParser {
 
     private parseCompiledStyles(cssParser: CssParser, compiledStylesUrls: string[]) {
         return Promise.all(compiledStylesUrls.map(async (path) => {
-            const style = SassCompiler.compileFile(path);
-            await TempDocumentContentProvider.useTempDocument(style.css,
-                async doc => await cssParser.addSymbols(style.path, doc, style.sourceMap));
+            const style = await getStyleCompiler(path).compileFile(path);
+            if (style.css !== '') {
+                await TempDocumentContentProvider.useTempDocument(style.css,
+                    async doc => await cssParser.addSymbols(style.path, doc, style.sourceMap));
+            }
         }));
     }
 
@@ -82,10 +85,10 @@ export class StylesToCompletitionItemsParser {
             readyStyles = styles.map(x => ({ css: x, path: path ?? '' }));
         }
         else {
-            readyStyles = styles.map(x => SassCompiler.compileString(x, syntax, path));
+            readyStyles = await Promise.all(styles.map(async x => await getStyleCompiler(syntax).compileString(x, syntax, path)));
         }
 
-        await Promise.all(readyStyles.map(async style => {
+        await Promise.all(readyStyles.filter(x => x.css !== '').map(async style => {
             await TempDocumentContentProvider.useTempDocument(style.css,
                 async doc => await cssParser.addSymbols(style.path, doc, style.sourceMap));
         }));

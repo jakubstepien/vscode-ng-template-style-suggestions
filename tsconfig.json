@@ -19,5 +19,6 @@
 		"src/test/scss/test-project/**",
 		"src/test/sass/test-project/**",
 		"src/test/css/test-project/**",
+		"src/test/less/test-project/**",
 	]
 }

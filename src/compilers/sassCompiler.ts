@@ -4,15 +4,10 @@ import { pathToFileURL } from 'url';
 import { StyleSyntax } from '../common';
 import { getPathsToIgnore } from '../configurationHelper';
 import { angularConfigProvider } from '../providers/angularConfigProvider';
+import { StyleCompilationResult, StyleCompiler } from './styleCompiler';
 
-export type StyleCompilationResult = {
-    css: string,
-    path: string
-    sourceMap?: RawSourceMap,
-};
-
-export class SassCompiler {
-    public static compileFile(path: string): StyleCompilationResult {
+export class SassCompiler implements StyleCompiler {
+    public async compileFile(path: string): Promise<StyleCompilationResult> {
         try {
             const result = sass.compile(path, SassCompiler.getSassOptions());
             return {
@@ -30,9 +25,12 @@ export class SassCompiler {
         }
     }
 
-    public static compileString(content: string, syntax: StyleSyntax, path?: string): StyleCompilationResult {
+    public async compileString(content: string, syntax: StyleSyntax, path?: string): Promise<StyleCompilationResult> {
         try {
             const options: sass.StringOptions<'sync'> = SassCompiler.getSassOptions();
+            if (syntax === 'less') {
+                throw new Error('Invalid syntax');
+            }
             options.syntax = syntax === StyleSyntax.sass ? 'indented' : syntax;
             const result = sass.compileString(content, options);
             return {

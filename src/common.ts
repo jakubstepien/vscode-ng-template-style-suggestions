@@ -5,6 +5,7 @@ export enum StyleSyntax {
     scss = 'scss',
     css = 'css',
     sass = 'sass',
+    less = 'less',
 }
 
 export type SuggestionType = 'class' | 'id';

@@ -5,18 +5,18 @@ import { LocalStylesProvider } from '../../../../providers/localStylesProvider';
 import { globalStylesProvider } from '../../../../providers/globalStylesProvider';
 import { extensionString, ignorePathsForSuggestions } from '../../../../configurationHelper';
 
-suite('SASS Regular component global class suggestions', () => {
+suite('LESS Regular component global class suggestions', () => {
 	const contex = activateExtension();
 
 	test('global style classes', async () => {
 		await setGlobalStyle(`
-			.global-class
-				color: red
+			.global-class {
+				color: red;
 
-				.global-class-nested .global-another
-					color: red
-				
-			
+				.global-class-nested .global-another {
+					color: red;
+				}
+			}
 		`);
 		const items = await getCompletitionItems();
 		assert.strictEqual(true, items.class.has('global-class'));
@@ -26,100 +26,47 @@ suite('SASS Regular component global class suggestions', () => {
 
 	test('global style import other file', async () => {
 		await setOtherGlobalStyle(`
-			.global-imported-class 
-				color: red
-			
+			.global-imported-class {
+				color: red;
+			}
 		`);
 		await setGlobalStyle(`
-			@import './other-global-style'
-			.global-class 
-				color: red
-			
+			@import './other-global-style.less';
+			.global-class {
+				color: red;
+			}
 		`);
 		const items = await getCompletitionItems();
 		assert.strictEqual(true, items.class.has('global-class'));
 		assert.strictEqual(true, items.class.has('global-imported-class'));
 	});
 
-	test('global style import from node modules tilde', async () => {
-		await setGlobalStyle(`
-			@import "~bootstrap/scss/bootstrap"
-			.global-class
-				color: red
-			
-		`);
-		const items = await getCompletitionItems();
-		assert.strictEqual(true, items.class.has('global-class'));
-		assert.strictEqual(true, items.class.has('btn-danger'));
-	});
-
-	test('global style import from node modules tilde with extension', async () => {
-		await setGlobalStyle(`
-			@import "~bootstrap/scss/bootstrap"
-			.global-class
-				color: red
-			
-		`);
-		const items = await getCompletitionItems();
-		assert.strictEqual(true, items.class.has('global-class'));
-		assert.strictEqual(true, items.class.has('btn-danger'));
-	});
-
-	test('global style import from node modules exact path', async () => {
-		await setGlobalStyle(`
-			@import "../node_modules/bootstrap/scss/bootstrap"
-			.global-class
-				color: red
-			
-		`);
-		const items = await getCompletitionItems();
-		assert.strictEqual(true, items.class.has('global-class'));
-		assert.strictEqual(true, items.class.has('btn-danger'));
-	});
-
-	test('global style import from node modules exact path with extension', async () => {
-		await setGlobalStyle(`
-			@import "../node_modules/bootstrap/scss/bootstrap.scss"
-			.global-class
-				color: red
-			
-		`);
-		const items = await getCompletitionItems();
-		assert.strictEqual(true, items.class.has('global-class'));
-		assert.strictEqual(true, items.class.has('btn-danger'));
-	});
-
-	test('global style import skips ignored path', async () => {
-		const opt = await vscode.workspace.getConfiguration(extensionString)
-		await opt.update(ignorePathsForSuggestions, [
-			{regex: 'bootstrap', flags: []},
-		]);
-		
-		await setGlobalStyle(`
-			@import "../node_modules/bootstrap/scss/bootstrap.scss"
-			.global-class
-				color: red
-			
-		`);
-
-		const items = await getCompletitionItems();
-		assert.strictEqual(true, items.class.has('global-class'));
-		assert.strictEqual(false, items.class.has('btn-danger'));
-	});
-
-	
 	test('global style import imports css file', async () => {
-
 		await setGlobalStyle(`
-			@import "../node_modules/bootstrap/dist/css/bootstrap.css"
-			.global-class
-				color: red
-			
+			@import "../node_modules/bootstrap/dist/css/bootstrap.css";
+			.global-class {
+				color: red;
+			}
 		`);
-
 		const items = await getCompletitionItems();
+
 		assert.strictEqual(true, items.class.has('global-class'));
 		assert.strictEqual(true, items.class.has('btn-danger'));
+		assert.strictEqual(true, items.class.has('col-sm-6'));
+	});
+
+	test('global style import imports css file as less', async () => {
+		await setGlobalStyle(`
+			@import (less) "../node_modules/bootstrap/dist/css/bootstrap.css";
+			.global-class {
+				color: red;
+			}
+		`);
+		const items = await getCompletitionItems();
+
+		assert.strictEqual(true, items.class.has('global-class'));
+		assert.strictEqual(true, items.class.has('btn-danger'));
+		assert.strictEqual(true, items.class.has('col-sm-6'));
 	});
 
 	test('global style import skips ignored css file path', async () => {
@@ -129,13 +76,30 @@ suite('SASS Regular component global class suggestions', () => {
 		]);
 		
 		await setGlobalStyle(`
-			@import "../node_modules/bootstrap/dist/css/bootstrap.css"
-			.global-class
-				color: red
-			
+			@import "../node_modules/bootstrap/dist/css/bootstrap.css";
+			.global-class {
+				color: red;
+			}
 		`);
 
 		const items = await getCompletitionItems();
+		assert.strictEqual(true, items.class.has('global-class'));
+		assert.strictEqual(false, items.class.has('btn-danger'));
+	});
+
+	test('global style import imports skips ignored css file as less', async () => {
+		const opt = await vscode.workspace.getConfiguration(extensionString);
+		await opt.update(ignorePathsForSuggestions, [
+			{regex: 'bootstrap', flags: []},
+		]);
+		await setGlobalStyle(`
+			@import (less) "../node_modules/bootstrap/dist/css/bootstrap.css";
+			.global-class {
+				color: red;
+			}
+		`);
+		const items = await getCompletitionItems();
+
 		assert.strictEqual(true, items.class.has('global-class'));
 		assert.strictEqual(false, items.class.has('btn-danger'));
 	});

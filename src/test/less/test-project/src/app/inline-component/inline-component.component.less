@@ -1,0 +1,17 @@
+@import './local-imported.less';
+
+.inline-component-class {
+    text-decoration: underline;
+    .inline-component-nested-class {
+        border: 1px solid #000;
+    }
+}
+
+@iterations: 2;
+.loop (@i) when (@i > 0) {
+    .inline-component-dynamic-class-@{i} {
+        width: ~"@{i}%";
+    }
+    .loop(@i - 1);
+}
+.loop (@iterations);
