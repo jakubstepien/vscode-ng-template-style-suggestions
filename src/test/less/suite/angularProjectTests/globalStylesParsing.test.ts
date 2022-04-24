@@ -1,9 +1,9 @@
 import * as assert from 'assert';
 import * as vscode from 'vscode';
-import { activateExtension, resetGlobalStyles, setGlobalStyle, setOtherGlobalStyle } from '../test-utils';
+import { activateExtension, resetGlobalStyles, setGlobalStyle, setOtherGlobalStyle } from '../testUtils';
 import { LocalStylesProvider } from '../../../../providers/localStylesProvider';
 import { globalStylesProvider } from '../../../../providers/globalStylesProvider';
-import { extensionString, ignorePathsForSuggestions } from '../../../../configurationHelper';
+import { extensionString, globalStylesSuggestions, ignorePathsForSuggestions } from '../../../../configurationHelper';
 
 suite('LESS Regular component global class suggestions', () => {
 	const contex = activateExtension();
@@ -22,6 +22,19 @@ suite('LESS Regular component global class suggestions', () => {
 		assert.strictEqual(true, items.class.has('global-class'));
 		assert.strictEqual(true, items.class.has('global-class-nested'));
 		assert.strictEqual(true, items.class.has('global-another'));
+	});
+
+	test('global style suggestions disabled returns empty', async () => {
+		const opt = vscode.workspace.getConfiguration(extensionString);
+		await opt.update(globalStylesSuggestions, false);
+		
+		await setGlobalStyle(`
+			.global-class {
+				color: red;
+			}
+		`);
+		const items = await getCompletitionItems();
+		assert.strictEqual(0, items.class.size);
 	});
 
 	test('global style import other file', async () => {
@@ -106,8 +119,6 @@ suite('LESS Regular component global class suggestions', () => {
 
 	teardown(async () => {
 		await resetGlobalStyles();
-		const opt = await vscode.workspace.getConfiguration(extensionString);
-		await opt.update(ignorePathsForSuggestions, []);
 	});
 });
 

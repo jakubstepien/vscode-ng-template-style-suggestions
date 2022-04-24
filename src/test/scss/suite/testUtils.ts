@@ -1,6 +1,7 @@
 import { deactivate } from "../../../extension";
 import * as vscode from 'vscode';
 import { commands, extensionString, ignorePathsForSuggestions } from "../../../configurationHelper";
+import { resetConfiguration } from "../../testUtils";
 
 const mainStylePattern = '**/src/styles.scss';
 const otherMainStylePattern = '**/src/other-global-style.scss';
@@ -16,9 +17,8 @@ export function activateExtension(): vscode.ExtensionContext | null {
         await opt.update(ignorePathsForSuggestions, null);
     });
 
-    suiteTeardown(() => {
-        //causes weird race conditions teardown from 1 test triggers after setup from next
-        // deactivate();
+    teardown(() => {
+        resetConfiguration();
     });
     return contex;
 }

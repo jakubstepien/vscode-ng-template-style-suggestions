@@ -1,9 +1,10 @@
 import { deactivate } from "../../../extension";
 import * as vscode from 'vscode';
 import { commands, extensionString, ignorePathsForSuggestions } from "../../../configurationHelper";
+import { resetConfiguration } from "../../testUtils";
 
-const mainStylePattern = '**/src/styles.css';
-const otherMainStylePattern = '**/src/other-global-style.css';
+const mainStylePattern = '**/src/styles.sass';
+const otherMainStylePattern = '**/src/other-global-style.sass';
 
 export function activateExtension(): vscode.ExtensionContext | null {
     let contex: vscode.ExtensionContext | null = null;
@@ -16,9 +17,8 @@ export function activateExtension(): vscode.ExtensionContext | null {
         opt.update(ignorePathsForSuggestions, null);
     });
 
-    suiteTeardown(() => {
-        //causes weird race conditions teardown from 1 test triggers after setup from next
-        // deactivate();
+    teardown(() => {
+        resetConfiguration();
     });
     return contex;
 }
@@ -59,9 +59,9 @@ export async function resetGlobalStyles() {
 
 export async function setGlobalStyle(text: string) {
     await setFile(mainStylePattern, text);
-    // await new Promise(res => {
-    //     setTimeout(() => res(true), 300);
-    // })
+    await new Promise(res => {
+        setTimeout(() => res(true), 300);
+    })
 }
 
 export async function setOtherGlobalStyle(text: string) {

@@ -1,6 +1,6 @@
 import * as assert from 'assert';
 import * as vscode from 'vscode';
-import { activateExtension } from '../test-utils';
+import { activateExtension } from '../testUtils';
 import { LocalStylesProvider } from '../../../../providers/localStylesProvider';
 
 suite('SCSS Regular component local class suggestions', () => {

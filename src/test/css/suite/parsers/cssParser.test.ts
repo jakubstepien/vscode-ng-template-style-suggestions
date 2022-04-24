@@ -5,7 +5,7 @@ import * as assert from 'assert';
 import * as vscode from 'vscode';
 import { StyleSyntax } from '../../../../common';
 import { StylesToCompletitionItemsParser } from '../../../../parsers/stylesToCompletitionItemsParser';
-import { activateExtension } from '../test-utils';
+import { activateExtension } from '../testUtils';
 // import * as myExtension from '../../extension';
 
 suite('cssFileToCompletionItemsParser Test Suite', () => {
