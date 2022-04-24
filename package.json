@@ -17,6 +17,11 @@
   "categories": [
     "Other"
   ],
+  "keywords": [
+    "Angular",
+    "SCSS",
+    "SASS"
+  ],
   "activationEvents": [
     "workspaceContains:**/angular.json"
   ],
@@ -78,6 +83,11 @@
             "type": "boolean",
             "default": true,
             "description": "Cache suggestions until active editor window changes. Applicable only for html file templates, inline template suggestions will not be cached"
+          },
+          "angularSassSuggestions.globalStylesSuggestions": {
+            "type": "boolean",
+            "default": true,
+            "description": "Suggest classes and ids found in global styles defined in angular.json"
           }
         }
       }

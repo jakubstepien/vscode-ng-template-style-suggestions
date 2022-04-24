@@ -1,11 +1,11 @@
 import * as vscode from 'vscode';
 import { LocalStylesProvider } from './localStylesProvider';
 import { globalStylesProvider } from './globalStylesProvider';
-import { addMaps, extractCompletitionItemsFromGrouped, isDocumentInlineTemplate, joinSuggestions, SuggestionType } from '../common';
+import { addMaps, extractCompletitionItemsFromGrouped, isDocumentInlineTemplate, joinSuggestions, StyleSuggestionsByType, SuggestionType } from '../common';
 import { Subject } from 'rxjs';
 
 class ActiveDocumentStyleProvider {
-    private items: Promise<vscode.CompletionItem[]> | null = null;
+    private items: Promise<{ [key in SuggestionType]: vscode.CompletionItem[] }> | null = null;
     private onDestroy = new Subject<void>();
     private cacheEnabled = true;
 
@@ -34,11 +34,17 @@ class ActiveDocumentStyleProvider {
                 const localCompletitionItems = await new LocalStylesProvider(document, position).getCompletitionItems();
 
                 const combinedResults = joinSuggestions(localCompletitionItems, globalCompletitionItems, false);
-                res(extractCompletitionItemsFromGrouped(combinedResults, type));
+                res({
+                    class: Array.from(combinedResults.class).map(x => x[1]),
+                    id: Array.from(combinedResults.id).map(x => x[1]),
+                });
             });
 
         }
-        return await this.items;
+        const result = await this.items;
+        return type === 'class'
+            ? result.class
+            : result.id;
     }
 
     dispose() {

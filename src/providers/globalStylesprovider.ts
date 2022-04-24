@@ -3,6 +3,7 @@ import { Observable, Subject, Subscription, switchMap, finalize, startWith, of, 
 import { angularConfigProvider } from './angularConfigProvider';
 import { StylesToCompletitionItemsParser } from '../parsers/stylesToCompletitionItemsParser';
 import { getDefaultParsingResult, StyleSuggestionsByType } from '../common';
+import { globalStyleSuggestionsEnabled } from '../configurationHelper';
 
 class GlobalStylesProvider {
     private static sortingPrefix: string = 'style2:';
@@ -14,28 +15,33 @@ class GlobalStylesProvider {
         this.subs?.unsubscribe();
         this.subs = new Subscription();
 
-        this.mainStylesUris$ = angularConfigProvider.config$.pipe(
-            switchMap(x => {
-                if (x == null) {
-                    return of([]);
-                }
-                const files = x.stylesUrls;
-                const subject = new Subject<string[]>();
-                const watchers = files.map(x => vscode.workspace.createFileSystemWatcher('**/' + x));
-                watchers.forEach(x => {
-                    x.onDidChange(() => {
-                        subject.next(files);
+        if (globalStyleSuggestionsEnabled()) {
+            this.mainStylesUris$ = angularConfigProvider.config$.pipe(
+                switchMap(x => {
+                    if (x == null) {
+                        return of([]);
+                    }
+                    const files = x.stylesUrls;
+                    const subject = new Subject<string[]>();
+                    const watchers = files.map(x => vscode.workspace.createFileSystemWatcher('**/' + x));
+                    watchers.forEach(x => {
+                        x.onDidChange(() => {
+                            subject.next(files);
+                        });
                     });
-                });
-                const disposeWatchers = () => {
-                    watchers.forEach(w => w.dispose());
-                };
-                return subject.pipe(startWith(files), finalize(disposeWatchers));
+                    const disposeWatchers = () => {
+                        watchers.forEach(w => w.dispose());
+                    };
+                    return subject.pipe(startWith(files), finalize(disposeWatchers));
+                }));
+    
+            this.subs.add(this.mainStylesUris$.subscribe(x => {
+                this.items = this.initItems(x);
             }));
-
-        this.subs.add(this.mainStylesUris$.subscribe(x => {
-            this.items = this.initItems(x);
-        }));
+        }
+        else {
+            this.items = Promise.resolve(getDefaultParsingResult());
+        }
     }
 
     getGlobalCompletitionItems() { return this.items; }

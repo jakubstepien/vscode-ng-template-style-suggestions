@@ -9,6 +9,7 @@ export const projectConfigurationName = 'project';
 export const extraWatchersConfigurationName = 'extraFileWatchers';
 export const ignorePathsForSuggestions = 'ignorePathsForSuggestions';
 export const cacheActiveEditorSuggestions = 'cacheActiveEditorSuggestions';
+export const globalStylesSuggestions = 'globalStylesSuggestions';
 
 class Command<TArg> {
     constructor(private command: string, private callback: (arg: TArg) => any, thisArg?: any) {
@@ -73,6 +74,9 @@ export function registerConfigurationChangeEvents(content: vscode.ExtensionConte
         await resetIfAffected(e, `${extensionString}.${cacheActiveEditorSuggestions}`, async () => {
             await commands.resetCache.invoke();
         });
+        await resetIfAffected(e, `${extensionString}.${globalStylesSuggestions}`, async () => {
+            await commands.resetCache.invoke();
+        });
 
         await resetIfAffected(e, `${extensionString}.${extraWatchersConfigurationName}`, async () => {
             setupWatchers();
@@ -84,6 +88,11 @@ export function registerConfigurationChangeEvents(content: vscode.ExtensionConte
             cleanupWatchers();
         }
     });
+}
+
+export function globalStyleSuggestionsEnabled(): boolean {
+    const setting = vscode.workspace.getConfiguration(extensionString).get(globalStylesSuggestions) as boolean | null;
+    return setting ?? true;
 }
 
 type RegexFlag = 'd' | 'g' | 'i' | 'm' | 's' | 'u' | 'y';
