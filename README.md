@@ -22,6 +22,10 @@ Commands that resets cached global styles
 
 ## Configuration
 
+>Angular json path pattern
+
+File pattern used to locate angular.json, default is `**/*angular.json`
+
 >Project
 
 Name of the project from angular.json to get global styles from, if empty uses value of 'defaultProject' from angular.json
@@ -33,12 +37,15 @@ Example pattern:
 `**/styles/variables.scss`
 
 >Ignore paths for suggestions
+
 List of regexes to filter file paths used for suggestions, if matches all classes and ids from the file will be ignored.
 
 >Cache active editor suggestions
+
 Caches suggestions until currently edited file changes. Default is true
 
 >Global styles suggestions
+
 Show classes and ids from globally defined styles. Default is true
 
 ## Requirements

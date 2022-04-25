@@ -31,12 +31,12 @@
     "commands": [
       {
         "command": "angularTemplateStyleSuggestions.resetCache",
-        "title": "Angular Sass Suggestions: Reset cache"
+        "title": "Angular templates style suggestions: Reset cache"
       }
     ],
     "configuration": [
       {
-        "title": "Angular Sass classes suggestions",
+        "title": "Angular templates style suggestions",
         "properties": {
           "angularTemplateStyleSuggestions.project": {
             "type": "string",
@@ -89,6 +89,11 @@
             "type": "boolean",
             "default": true,
             "description": "Suggest classes and ids found in global styles defined in angular.json"
+          },
+          "angularTemplateStyleSuggestions.angularJsonPathPattern": {
+            "type": "string",
+            "default": "**/*angular.json",
+            "description": "File pattern to look for angular.json file"
           }
         }
       }

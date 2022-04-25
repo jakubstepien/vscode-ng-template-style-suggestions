@@ -6,6 +6,7 @@ import { globalStylesProvider } from './providers/globalStylesProvider';
 export const extensionString = 'angularTemplateStyleSuggestions';
 export const resetCacheCommand = 'resetCache';
 export const projectConfigurationName = 'project';
+export const angularJsonPathPattern = 'angularJsonPathPattern';
 export const extraWatchersConfigurationName = 'extraFileWatchers';
 export const ignorePathsForSuggestions = 'ignorePathsForSuggestions';
 export const cacheActiveEditorSuggestions = 'cacheActiveEditorSuggestions';
@@ -65,18 +66,18 @@ export function registerConfigurationChangeEvents(content: vscode.ExtensionConte
     setupWatchers();
 
     const configurationWatcher = vscode.workspace.onDidChangeConfiguration(async e => {
-        await resetIfAffected(e, `${extensionString}.${projectConfigurationName}`, async () => {
-            await commands.resetCache.invoke();
-        });
-        await resetIfAffected(e, `${extensionString}.${ignorePathsForSuggestions}`, async () => {
-            commands.resetCache.invoke();
-        });
-        await resetIfAffected(e, `${extensionString}.${cacheActiveEditorSuggestions}`, async () => {
-            await commands.resetCache.invoke();
-        });
-        await resetIfAffected(e, `${extensionString}.${globalStylesSuggestions}`, async () => {
-            await commands.resetCache.invoke();
-        });
+        const resetCacheOptions = [
+            projectConfigurationName,
+            ignorePathsForSuggestions,
+            cacheActiveEditorSuggestions,
+            globalStylesSuggestions,
+            angularJsonPathPattern
+        ];
+        for (const option of resetCacheOptions) {
+            await resetIfAffected(e, `${extensionString}.${option}`, async () => {
+                await commands.resetCache.invoke();
+            });
+        }
 
         await resetIfAffected(e, `${extensionString}.${extraWatchersConfigurationName}`, async () => {
             setupWatchers();
@@ -93,6 +94,11 @@ export function registerConfigurationChangeEvents(content: vscode.ExtensionConte
 export function globalStyleSuggestionsEnabled(): boolean {
     const setting = vscode.workspace.getConfiguration(extensionString).get(globalStylesSuggestions) as boolean | null;
     return setting ?? true;
+}
+
+export function getAngularJsonPathPattern(): string {
+    const setting = vscode.workspace.getConfiguration(extensionString).get(angularJsonPathPattern) as string | null;
+    return setting ?? '**/*angular.json';
 }
 
 type RegexFlag = 'd' | 'g' | 'i' | 'm' | 's' | 'u' | 'y';

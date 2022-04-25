@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import { BehaviorSubject } from "rxjs";
 import path = require('path');
 import { StyleSyntax } from '../common';
+import { getAngularJsonPathPattern } from '../configurationHelper';
 
 export type AngularConfig = {
     path: string,
@@ -13,7 +14,6 @@ export type AngularConfig = {
     syntax: StyleSyntax;
 };
 
-const angularJsonPath = '**/*angular.json';
 class AngularConfigProvider {
     private watcher: vscode.FileSystemWatcher | null = null;
     private config = new BehaviorSubject<AngularConfig | null>(null);
@@ -29,6 +29,7 @@ class AngularConfigProvider {
             this.config.next(newConfig);
         };
 
+        const angularJsonPath = getAngularJsonPathPattern();
         const json = await this.checkIfExistsAngularJson(angularJsonPath);
         this.watcher = vscode.workspace.createFileSystemWatcher(angularJsonPath);
         this.watcher.onDidChange(async (e) => {
@@ -40,10 +41,14 @@ class AngularConfigProvider {
     private async checkIfExistsAngularJson(angularJsonPath: string) {
         const angularJson = await vscode.workspace.findFiles(angularJsonPath);
         if (angularJson.length === 0) {
-            throw new Error("Missing angular.json file, searched path: " + angularJsonPath);
+            const msg = "Missing angular.json file, searched path: " + angularJsonPath;
+            await vscode.window.showErrorMessage(msg);
+            throw new Error(msg);
         }
         if (angularJson.length > 1) {
-            throw new Error("Found multiple angular.json files, searched path: " + angularJsonPath);
+            const msg = "Found multiple angular.json files, searched path: " + angularJsonPath;
+            await vscode.window.showErrorMessage(msg);
+            throw new Error(msg);
         }
         return angularJson[0];
     }
