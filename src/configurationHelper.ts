@@ -3,7 +3,7 @@ import { activeDocumentStyleProvider } from './providers/activeDocumentStyleProv
 import { angularConfigProvider } from './providers/angularConfigProvider';
 import { globalStylesProvider } from './providers/globalStylesProvider';
 
-export const extensionString = 'angularSassSuggestions';
+export const extensionString = 'angularTemplateStyleSuggestions';
 export const resetCacheCommand = 'resetCache';
 export const projectConfigurationName = 'project';
 export const extraWatchersConfigurationName = 'extraFileWatchers';

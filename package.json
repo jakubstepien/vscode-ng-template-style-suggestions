@@ -1,15 +1,15 @@
 {
-  "name": "vscode-angular-sass-suggestions",
-  "displayName": "Angular SASS classes suggestions",
-  "description": "Suggestions for css classes in Angular templates",
-  "version": "0.9.5",
+  "name": "angular-template-style-suggestions",
+  "displayName": "Angular templates style suggestions",
+  "description": "Suggestions for sass/scss/less/css classes and ids in Angular templates",
+  "version": "1.0.0",
   "license": "MIT",
   "author": "jakubstepien",
   "publisher": "jakubstepien",
   "icon": "images/angular.png",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jakubstepien/vscode-angular-sass-suggestions"
+    "url": "https://github.com/jakubstepien/vscode-ng-template-style-suggestions"
   },
   "engines": {
     "vscode": "^1.63.0"
@@ -20,7 +20,8 @@
   "keywords": [
     "Angular",
     "SCSS",
-    "SASS"
+    "SASS",
+    "CSS"
   ],
   "activationEvents": [
     "workspaceContains:**/angular.json"
@@ -29,7 +30,7 @@
   "contributes": {
     "commands": [
       {
-        "command": "angularSassSuggestions.resetCache",
+        "command": "angularTemplateStyleSuggestions.resetCache",
         "title": "Angular Sass Suggestions: Reset cache"
       }
     ],
@@ -37,18 +38,18 @@
       {
         "title": "Angular Sass classes suggestions",
         "properties": {
-          "angularSassSuggestions.project": {
+          "angularTemplateStyleSuggestions.project": {
             "type": "string",
             "description": "Name of the project from the angular.json to get global styles from, if empty uses value of defaultProject from the angular.json"
           },
-          "angularSassSuggestions.extraFileWatchers": {
+          "angularTemplateStyleSuggestions.extraFileWatchers": {
             "type": "array",
             "items": {
               "type": "string"
             },
             "description": "List of additional file patterns whose change should trigger cache reset"
           },
-          "angularSassSuggestions.ignorePathsForSuggestions": {
+          "angularTemplateStyleSuggestions.ignorePathsForSuggestions": {
             "type": "array",
             "items": {
               "type": "object",
@@ -79,12 +80,12 @@
             },
             "description": "Regexes to filter suggestions, if style source path matches it won't be suggested"
           },
-          "angularSassSuggestions.cacheActiveEditorSuggestions": {
+          "angularTemplateStyleSuggestions.cacheActiveEditorSuggestions": {
             "type": "boolean",
             "default": true,
             "description": "Cache suggestions until active editor window changes. Applicable only for html file templates, inline template suggestions will not be cached"
           },
-          "angularSassSuggestions.globalStylesSuggestions": {
+          "angularTemplateStyleSuggestions.globalStylesSuggestions": {
             "type": "boolean",
             "default": true,
             "description": "Suggest classes and ids found in global styles defined in angular.json"

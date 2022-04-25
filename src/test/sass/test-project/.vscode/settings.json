@@ -1,4 +1,4 @@
 {
-    "angularSassSuggestions.ignorePathsForSuggestions": [],
-    "angularSassSuggestions.globalStylesSuggestions": true
+    "angularTemplateStyleSuggestions.ignorePathsForSuggestions": [],
+    "angularTemplateStyleSuggestions.globalStylesSuggestions": true
 }
