@@ -56,19 +56,23 @@ suite('CSS Regular component global class suggestions', () => {
 	test('global style import skips ignored path', async () => {
 		const opt = await vscode.workspace.getConfiguration(extensionString)
 		await opt.update(ignorePathsForSuggestions, [
-			{regex: 'bootstrap', flags: []},
+			{regex: 'other', flags: []},
 		]);
-
-		await setGlobalStyle(`
-			@import "../node_modules/bootstrap/scss/bootstrap.scss";
-			.global-class {
-				color: red;
-			}
-		`);
+		await setOtherGlobalStyle(`
+		.global-imported-class {
+			color: red;
+		}
+	`);
+	await setGlobalStyle(`
+		@import './other-global-style.css';
+		.global-class {
+			color: red;
+		}
+	`);
 
 		const items = await getCompletitionItems();
 		assert.strictEqual(true, items.class.has('global-class'));
-		assert.strictEqual(false, items.class.has('btn-danger'));
+		assert.strictEqual(false, items.class.has('global-imported-class'));
 	});
 
 
