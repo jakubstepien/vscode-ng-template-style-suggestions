@@ -3,12 +3,12 @@
 This extension provides intelisense for classes and ids in angular templates. Supports SASS, SCSS, LESS and CSS.
 
 ### Classes from component style
-![Component scoped css classes](https://github.com/jakubstepien/vscode-ng-template-style-suggestions/blob/master/images/local-css.gif)
+![Component scoped css classes](images/local-css.gif)
 
 Note: Suggestions in html file templates rely on matching filenames. So extension won't work if component's ts file is in a different directory than the template.
 
 ### Classes from global styles
-![Global css classes](https://github.com/jakubstepien/vscode-ng-template-style-suggestions/blob/master/images/global-css.gif)
+![Global css classes](images/global-css.gif)
 
 The extension tracks files specified in styles array of default project in angular.json file. These suggestions are cached until one of the files changes or angular.json changes.
 

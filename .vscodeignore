@@ -12,4 +12,3 @@ doc/**
 node_modules/**
 webpack.config.js
 test/test-project/**
-images/*.gif
