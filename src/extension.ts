@@ -1,10 +1,10 @@
 import * as vscode from 'vscode';
-import { globalStylesProvider } from './providers/globalStylesProvider';
+import { globalStylesProvider } from './providers/styles/globalStylesProvider';
 import { TempDocumentContentProvider } from './documentContentProviders/tempDocumentContentProvider';
 import { registerCommands, commands, registerConfigurationChangeEvents } from './configurationHelper';
 import { angularConfigProvider } from './providers/angularConfigProvider';
 import { getInputtingSymbol } from './parsers/inputPositionParser';
-import { activeDocumentStyleProvider } from './providers/activeDocumentStyleProvider';
+import { activeDocumentStyleProvider } from './providers/styles/activeDocumentStyleProvider';
 
 
 export function activate(context: vscode.ExtensionContext) {

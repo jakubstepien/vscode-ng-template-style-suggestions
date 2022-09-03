@@ -50,7 +50,7 @@ export class SassCompiler implements StyleCompiler {
 
     private static getSassOptions(): sass.Options<"sync"> {
         const nodePath = angularConfigProvider.configSnapshot?.nodeModulesLocation;
-        const paths = angularConfigProvider.configSnapshot?.includePaths ?? [];
+        const paths = Array.from(angularConfigProvider.configSnapshot?.includePaths ?? []);
         if (nodePath != null) {
             paths.push(nodePath);
         }

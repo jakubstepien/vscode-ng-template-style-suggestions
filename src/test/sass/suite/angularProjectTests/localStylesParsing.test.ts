@@ -1,7 +1,7 @@
 import * as assert from 'assert';
 import * as vscode from 'vscode';
 import { activateExtension } from '../testUtils';
-import { LocalStylesProvider } from '../../../../providers/localStylesProvider';
+import { LocalStylesProvider } from '../../../../providers/styles/localStylesProvider';
 
 suite('SCSS Regular component local class suggestions', () => {
 	const contex = activateExtension();

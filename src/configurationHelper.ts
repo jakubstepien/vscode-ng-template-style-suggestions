@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
-import { activeDocumentStyleProvider } from './providers/activeDocumentStyleProvider';
+import { activeDocumentStyleProvider } from './providers/styles/activeDocumentStyleProvider';
 import { angularConfigProvider } from './providers/angularConfigProvider';
-import { globalStylesProvider } from './providers/globalStylesProvider';
+import { globalStylesProvider } from './providers/styles/globalStylesProvider';
 
 export const extensionString = 'angularTemplateStyleSuggestions';
 export const resetCacheCommand = 'resetCache';

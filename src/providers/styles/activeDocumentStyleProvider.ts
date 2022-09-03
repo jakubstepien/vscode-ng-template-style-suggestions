@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { LocalStylesProvider } from './localStylesProvider';
 import { globalStylesProvider } from './globalStylesProvider';
-import { addMaps, extractCompletitionItemsFromGrouped, isDocumentInlineTemplate, joinSuggestions, StyleSuggestionsByType, SuggestionType } from '../common';
+import { addMaps, extractCompletitionItemsFromGrouped, isDocumentInlineTemplate, joinSuggestions, StyleSuggestionsByType, SuggestionType } from '../../common';
 import { Subject } from 'rxjs';
 
 class ActiveDocumentStyleProvider {

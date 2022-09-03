@@ -6,12 +6,12 @@ import { StyleSyntax } from '../common';
 import { getAngularJsonPathPattern } from '../configurationHelper';
 
 export type AngularConfig = {
-    path: string,
-    project: string,
-    stylesUrls: string[]
-    includePaths: string[];
-    nodeModulesLocation: string;
-    syntax: StyleSyntax;
+    path: Readonly<string>,
+    project: Readonly<string>,
+    stylesUrls: Readonly<string[]>,
+    includePaths: Readonly<string[]>;
+    nodeModulesLocation: Readonly<string>;
+    syntax: Readonly<StyleSyntax>;
 };
 
 class AngularConfigProvider {

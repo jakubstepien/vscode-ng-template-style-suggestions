@@ -49,7 +49,7 @@ export class LessCompiler implements StyleCompiler {
 
     private getLessOptions(stylePath?: string): Less.Options {
         const nodePath = angularConfigProvider.configSnapshot?.nodeModulesLocation;
-        const paths = angularConfigProvider.configSnapshot?.includePaths ?? [];
+        const paths = Array.from(angularConfigProvider.configSnapshot?.includePaths ?? []);
         if (nodePath != null) {
             paths.push(nodePath);
         }

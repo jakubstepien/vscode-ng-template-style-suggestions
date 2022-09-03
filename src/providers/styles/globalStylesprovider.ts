@@ -1,9 +1,9 @@
 import * as vscode from 'vscode';
-import { Observable, Subject, Subscription, switchMap, finalize, startWith, of, } from 'rxjs';
-import { angularConfigProvider } from './angularConfigProvider';
-import { StylesToCompletitionItemsParser } from '../parsers/stylesToCompletitionItemsParser';
-import { getDefaultParsingResult, StyleSuggestionsByType } from '../common';
-import { globalStyleSuggestionsEnabled } from '../configurationHelper';
+import { Observable, Subject, Subscription, switchMap, finalize, startWith, of, map, } from 'rxjs';
+import { angularConfigProvider } from '../angularConfigProvider';
+import { StylesToCompletitionItemsParser } from '../../parsers/stylesToCompletitionItemsParser';
+import { getDefaultParsingResult, StyleSuggestionsByType } from '../../common';
+import { globalStyleSuggestionsEnabled } from '../../configurationHelper';
 
 class GlobalStylesProvider {
     private static sortingPrefix: string = 'style2:';
@@ -21,7 +21,7 @@ class GlobalStylesProvider {
                     if (x == null) {
                         return of([]);
                     }
-                    const files = x.stylesUrls;
+                    const files = Array.from(x.stylesUrls);
                     const subject = new Subject<string[]>();
                     const watchers = files.map(x => vscode.workspace.createFileSystemWatcher('**/' + x));
                     watchers.forEach(x => {
