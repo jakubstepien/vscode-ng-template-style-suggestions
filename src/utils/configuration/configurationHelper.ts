@@ -1,44 +1,7 @@
 import * as vscode from 'vscode';
-import { activeDocumentStyleProvider } from './providers/styles/activeDocumentStyleProvider';
-import { angularConfigProvider } from './providers/angularConfigProvider';
-import { globalStylesProvider } from './providers/styles/globalStylesProvider';
-
-export const extensionString = 'angularTemplateStyleSuggestions';
-export const resetCacheCommand = 'resetCache';
-export const projectConfigurationName = 'project';
-export const angularJsonPathPattern = 'angularJsonPathPattern';
-export const extraWatchersConfigurationName = 'extraFileWatchers';
-export const ignorePathsForSuggestions = 'ignorePathsForSuggestions';
-export const cacheActiveEditorSuggestions = 'cacheActiveEditorSuggestions';
-export const globalStylesSuggestions = 'globalStylesSuggestions';
-
-class Command<TArg> {
-    constructor(private command: string, private callback: (arg: TArg) => any, thisArg?: any) {
-    }
-
-    public invoke(arg: TArg) {
-        return vscode.commands.executeCommand(this.command, arg);
-    }
-
-    public register() {
-        return vscode.commands.registerCommand(this.command, this.callback);
-    }
-}
-
-export const commands = {
-    resetCache: new Command<void>(`${extensionString}.${resetCacheCommand}`, async () => {
-        const config = vscode.workspace.getConfiguration(extensionString);
-        const projectName = config.get(projectConfigurationName) as string;
-
-        await angularConfigProvider.init(projectName);
-        await globalStylesProvider.init();
-        activeDocumentStyleProvider.init(config.get(cacheActiveEditorSuggestions) as boolean);
-    })
-};
-
-export function registerCommands(context: vscode.ExtensionContext) {
-    context.subscriptions.push(commands.resetCache.register());
-}
+import { styleLinkProviderManager } from '../../styleLinkProviderManager';
+import { extensionCommands } from './commandsHelper';
+import { extensionString, extraWatchersConfigurationName, projectConfigurationName, ignorePathsForSuggestions, cacheActiveEditorSuggestions, globalStylesSuggestions, angularJsonPathPattern, useAngularIncludePathsInStyleSheetNavigationLinks } from './constants';
 
 export function registerConfigurationChangeEvents(content: vscode.ExtensionContext) {
     const resetIfAffected = async (e: vscode.ConfigurationChangeEvent, option: string, callback: () => void) => {
@@ -60,7 +23,7 @@ export function registerConfigurationChangeEvents(content: vscode.ExtensionConte
         if (watchers != null && watchers.length > 0) {
             cleanupWatchers();
             fileWatchers = watchers.map(x => vscode.workspace.createFileSystemWatcher(x));
-            fileWatchers.forEach(x => x.onDidChange(() => commands.resetCache.invoke()));
+            fileWatchers.forEach(x => x.onDidChange(() => extensionCommands.resetCache.invoke()));
         }
     };
     setupWatchers();
@@ -75,12 +38,16 @@ export function registerConfigurationChangeEvents(content: vscode.ExtensionConte
         ];
         for (const option of resetCacheOptions) {
             await resetIfAffected(e, `${extensionString}.${option}`, async () => {
-                await commands.resetCache.invoke();
+                await extensionCommands.resetCache.invoke();
             });
         }
 
         await resetIfAffected(e, `${extensionString}.${extraWatchersConfigurationName}`, async () => {
             setupWatchers();
+        });
+
+        await resetIfAffected(e, `${extensionString}.${useAngularIncludePathsInStyleSheetNavigationLinks}`, async () => {
+            styleLinkProviderManager.reset();
         });
     });
     content.subscriptions.push({
@@ -91,14 +58,21 @@ export function registerConfigurationChangeEvents(content: vscode.ExtensionConte
     });
 }
 
+function getSetting<TValue>(key: string, defaultValue: TValue) {
+    const setting = vscode.workspace.getConfiguration(extensionString).get(key) as TValue | null;
+    return setting ?? defaultValue;
+}
+
 export function globalStyleSuggestionsEnabled(): boolean {
-    const setting = vscode.workspace.getConfiguration(extensionString).get(globalStylesSuggestions) as boolean | null;
-    return setting ?? true;
+    return getSetting(globalStylesSuggestions, true);
 }
 
 export function getAngularJsonPathPattern(): string {
-    const setting = vscode.workspace.getConfiguration(extensionString).get(angularJsonPathPattern) as string | null;
-    return setting ?? '**/*angular.json';
+    return getSetting(angularJsonPathPattern, '**/*angular.json');
+}
+
+export function getUseAngularIncludePathsInStyleSheetNavigationLinks(): boolean {
+    return getSetting(useAngularIncludePathsInStyleSheetNavigationLinks, false);
 }
 
 type RegexFlag = 'd' | 'g' | 'i' | 'm' | 's' | 'u' | 'y';
@@ -106,7 +80,6 @@ interface PathRegex {
     regex: string,
     flags: RegexFlag[];
 }
-
 export function getPathsToIgnore(): RegExp[] {
     const configPaths = vscode.workspace.getConfiguration(extensionString).get(ignorePathsForSuggestions) as PathRegex[];
     if (configPaths == null) {

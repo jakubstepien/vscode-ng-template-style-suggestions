@@ -3,10 +3,10 @@ import * as vscode from 'vscode';
 import { activateExtension, resetGlobalStyles, setGlobalStyle, setOtherGlobalStyle } from '../testUtils';
 import { LocalStylesProvider } from '../../../../providers/styles/localStylesProvider';
 import { globalStylesProvider } from '../../../../providers/styles/globalStylesProvider';
-import { extensionString, globalStylesSuggestions, globalStyleSuggestionsEnabled, ignorePathsForSuggestions } from '../../../../configurationHelper';
+import { extensionString, globalStylesSuggestions, ignorePathsForSuggestions } from '../../../../utils/configuration/constants';
 
 suite('CSS Regular component global class suggestions', () => {
-	const contex = activateExtension();
+	const context = activateExtension();
 
 	test('global style classes', async () => {
 		await setGlobalStyle(`

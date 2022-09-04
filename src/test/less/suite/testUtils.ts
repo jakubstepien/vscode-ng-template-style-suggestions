@@ -1,17 +1,18 @@
 import { deactivate } from "../../../extension";
 import * as vscode from 'vscode';
-import { commands, extensionString, ignorePathsForSuggestions } from "../../../configurationHelper";
 import { resetConfiguration } from "../../testUtils";
+import { extensionName, extensionString, ignorePathsForSuggestions } from "../../../utils/configuration/constants";
+import { extensionCommands } from "../../../utils/configuration/commandsHelper";
 
 const mainStylePattern = '**/src/styles.less';
 const otherMainStylePattern = '**/src/other-global-style.less';
 
 export function activateExtension(): vscode.ExtensionContext | null {
-    let contex: vscode.ExtensionContext | null = null;
+    let context: vscode.ExtensionContext | null = null;
     suiteSetup(async () => {
-        const ext = vscode.extensions.getExtension("jakubstepien.vscode-angular-sass-suggestions");
-        contex = await ext?.activate() as unknown as vscode.ExtensionContext;
-        await commands.resetCache.invoke();
+        const ext = vscode.extensions.getExtension(extensionName);
+        context = await ext?.activate() as unknown as vscode.ExtensionContext;
+        await extensionCommands.resetCache.invoke();
 
         const opt = await vscode.workspace.getConfiguration(extensionString)
         await opt.update(ignorePathsForSuggestions, null);
@@ -20,7 +21,7 @@ export function activateExtension(): vscode.ExtensionContext | null {
     teardown(() => {
         resetConfiguration();
     });
-    return contex;
+    return context;
 }
 
 export async function getDocumentForInlineStylesTests(pattern: vscode.GlobPattern, templatePosition: vscode.Position) {
@@ -59,9 +60,6 @@ export async function resetGlobalStyles() {
 
 export async function setGlobalStyle(text: string) {
     await setFile(mainStylePattern, text);
-    // await new Promise(res => {
-    //     setTimeout(() => res(true), 300);
-    // });
 }
 
 export async function setOtherGlobalStyle(text: string) {

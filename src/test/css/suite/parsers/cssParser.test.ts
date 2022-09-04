@@ -3,13 +3,13 @@ import * as assert from 'assert';
 // You can import and use all API from the 'vscode' module
 // as well as import your extension to test it
 import * as vscode from 'vscode';
-import { StyleSyntax } from '../../../../common';
+import { StyleSyntax } from '../../../../utils/common';
 import { StylesToCompletitionItemsParser } from '../../../../parsers/stylesToCompletitionItemsParser';
 import { activateExtension } from '../testUtils';
 // import * as myExtension from '../../extension';
 
 suite('cssFileToCompletionItemsParser Test Suite', () => {
-    const contex = activateExtension();
+    const context = activateExtension();
 
     test('css string to completition items', async () => {
         const css = `

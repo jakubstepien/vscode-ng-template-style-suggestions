@@ -1,18 +1,20 @@
 import * as vscode from 'vscode';
 import { globalStylesProvider } from './providers/styles/globalStylesProvider';
 import { TempDocumentContentProvider } from './documentContentProviders/tempDocumentContentProvider';
-import { registerCommands, commands, registerConfigurationChangeEvents } from './configurationHelper';
 import { angularConfigProvider } from './providers/angularConfigProvider';
 import { getInputtingSymbol } from './parsers/inputPositionParser';
 import { activeDocumentStyleProvider } from './providers/styles/activeDocumentStyleProvider';
-
+import { styleDocumentLinkProvider } from './providers/links/styleDocumentLinkProvider';
+import { extensionCommands, registerCommands } from './utils/configuration/commandsHelper';
+import { registerConfigurationChangeEvents } from './utils/configuration/configurationHelper';
+import { styleLinkProviderManager } from './styleLinkProviderManager';
 
 export function activate(context: vscode.ExtensionContext) {
 	TempDocumentContentProvider.register(context);
 	registerCommands(context);
 	registerConfigurationChangeEvents(context);
 
-	commands.resetCache.invoke();
+	extensionCommands.resetCache.invoke();
 
 	context.subscriptions.push(vscode.languages.registerCompletionItemProvider('html', {
 		async provideCompletionItems(document: vscode.TextDocument, position: vscode.Position) {
@@ -29,6 +31,7 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	}));
 
+	styleLinkProviderManager.init(context);
 	return context;
 }
 
@@ -37,4 +40,5 @@ export function deactivate() {
 	globalStylesProvider?.dispose();
 	activeDocumentStyleProvider?.dispose();
 	angularConfigProvider?.dispose();
+	styleDocumentLinkProvider?.dispose();
 }

@@ -1,4 +1,4 @@
-import { SuggestionType } from "../common";
+import { SuggestionType } from "../utils/common";
 
 const regex = /(\[?(?:(?:class)|(?:ngClass)|(?:id))\]?)="([^"]*)$/i;
 

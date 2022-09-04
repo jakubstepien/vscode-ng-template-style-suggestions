@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { StyleSyntax } from "../common";
+import { StyleSyntax } from "../utils/common";
 import { angularConfigProvider } from '../providers/angularConfigProvider';
 import { StyleCompilationResult, StyleCompiler } from "./styleCompiler";
 

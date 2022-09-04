@@ -1,4 +1,3 @@
-import { type } from 'os';
 import * as vscode from 'vscode';
 
 export enum StyleSyntax {
@@ -56,4 +55,8 @@ export function addMaps<K, V>(a: Map<K, V>, b: Map<K, V>, mutateFirst: boolean =
 export function isDocumentInlineTemplate(document: vscode.TextDocument) {
     //if angular language service is installed and template is inlined path will point to virtual doc with .ts.html extension
     return document.uri.path.endsWith(".ts.html");
+}
+
+export function isNotNull<T>(x: T | null | undefined): x is T {
+    return x != null;
 }

@@ -1,12 +1,11 @@
 import * as assert from 'assert';
 import * as vscode from 'vscode';
 import { activateExtension, resetGlobalStyles, setGlobalStyle, setOtherGlobalStyle } from '../testUtils';
-import { LocalStylesProvider } from '../../../../providers/styles/localStylesProvider';
 import { globalStylesProvider } from '../../../../providers/styles/globalStylesProvider';
-import { extensionString, globalStylesSuggestions, ignorePathsForSuggestions } from '../../../../configurationHelper';
+import { extensionString, globalStylesSuggestions, ignorePathsForSuggestions } from '../../../../utils/configuration/constants';
 
 suite('SASS Regular component global class suggestions', () => {
-	const contex = activateExtension();
+	const context = activateExtension();
 
 	test('global style classes', async () => {
 		await setGlobalStyle(`
@@ -107,7 +106,7 @@ suite('SASS Regular component global class suggestions', () => {
 	});
 
 	test('global style import skips ignored path', async () => {
-		const opt = await vscode.workspace.getConfiguration(extensionString)
+		const opt = await vscode.workspace.getConfiguration(extensionString);
 		await opt.update(ignorePathsForSuggestions, [
 			{regex: 'bootstrap', flags: []},
 		]);

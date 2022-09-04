@@ -2,19 +2,11 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 
 import { RawSourceMap, SourceMapConsumer } from "source-map-js";
-import { SuggestionType } from "../../common";
-import { getPathsToIgnore } from "../../configurationHelper";
-import { getCSSLanguageService, LanguageService } from "vscode-css-languageservice";
+import { StyleSyntax, SuggestionType } from "../../utils/common";
+import { getPathsToIgnore } from "../../utils/configuration/configurationHelper";
+import { LanguageService } from "vscode-css-languageservice";
 import { NodeData, StylesheetVisitor, StylesheetNode } from "./stylesheetVisitor";
-
-type Doc = {
-    uri: string;
-    getText: (range?: vscode.Range | undefined) => string;
-    languageId: string; lineCount: number;
-    offsetAt: (position: vscode.Position) => number;
-    positionAt: (offset: number) => vscode.Position;
-    version: number;
-};
+import { getLanguageServiceByLanguageType, LanguageServiceDocument, mapDocumentToLangServiceDocument } from '../../utils/languageServiceUtils';
 
 export class CssParser {
     private pathsToIgnore: RegExp[];
@@ -23,8 +15,7 @@ export class CssParser {
 
     constructor(pathsToIgnore?: RegExp[]) {
         this.pathsToIgnore = pathsToIgnore ?? getPathsToIgnore();
-        this.cssLanguageService = getCSSLanguageService();
-
+        this.cssLanguageService = getLanguageServiceByLanguageType(StyleSyntax.css);
         this.symbols = {
             class: new Set<string>(),
             id: new Set<string>()
@@ -42,7 +33,7 @@ export class CssParser {
     }
 
     private async addSymbolsInternal(docPath: string, doc: vscode.TextDocument, sourceMapConsumer?: SourceMapConsumer) {
-        const mappedDoc = CssParser.mapDocument(doc);
+        const mappedDoc = mapDocumentToLangServiceDocument(doc);
         const dirPath = path.dirname(docPath);
 
         const stylesheet = this.cssLanguageService.parseStylesheet(mappedDoc) as StylesheetNode;
@@ -67,7 +58,7 @@ export class CssParser {
         }
     }
 
-    private getVisitorCallback(dirPath: string, mappedDoc: Doc, additionalCssImports: Set<string>, sourceMapConsumer?: SourceMapConsumer) {
+    private getVisitorCallback(dirPath: string, mappedDoc: LanguageServiceDocument, additionalCssImports: Set<string>, sourceMapConsumer?: SourceMapConsumer) {
         const sourceFilter = this.getSourceIgnoredFilter(mappedDoc, sourceMapConsumer);
         const importFilter = this.getImportIgnoredFilter();
 
@@ -117,7 +108,7 @@ export class CssParser {
         };
     }
 
-    private getSourceIgnoredFilter(doc: Doc, sourceMapConsumer?: SourceMapConsumer) {
+    private getSourceIgnoredFilter(doc: LanguageServiceDocument, sourceMapConsumer?: SourceMapConsumer) {
         if (sourceMapConsumer == null || this.pathsToIgnore == null || this.pathsToIgnore.length === 0) {
             return (node: NodeData) => true;
         }
@@ -129,18 +120,4 @@ export class CssParser {
             return this.pathsToIgnore!.some(reg => reg.test(source)) === false;
         };
     }
-
-    private static mapDocument(document: vscode.TextDocument): Doc {
-        return {
-            uri: document.uri.path,
-            getText: document.getText,
-            languageId: document.languageId,
-            lineCount: document.lineCount,
-            offsetAt: document.offsetAt,
-            positionAt: document.positionAt,
-            version: document.version
-        };
-    }
-
-
 }

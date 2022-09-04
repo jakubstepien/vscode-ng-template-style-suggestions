@@ -6,7 +6,7 @@ import { LocalStylesProvider } from '../../../../providers/styles/localStylesPro
 const templatePosition = new vscode.Position(22, 14);
 
 suite('SCSS Inline component local class suggestions', () => {
-	const contex = activateExtension();
+	const context = activateExtension();
 
 	test('does not suggest style from other inline component', async () => {
 		const items = await getCompletitionItems();

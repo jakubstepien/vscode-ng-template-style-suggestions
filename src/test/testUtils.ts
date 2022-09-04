@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { extensionString, globalStylesSuggestions, ignorePathsForSuggestions } from '../configurationHelper';
+import { extensionString, globalStylesSuggestions, ignorePathsForSuggestions } from '../utils/configuration/constants';
 
 export async function resetConfiguration() {
     const opt = await vscode.workspace.getConfiguration(extensionString);

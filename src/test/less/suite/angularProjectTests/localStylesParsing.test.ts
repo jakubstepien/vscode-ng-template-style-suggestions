@@ -4,7 +4,7 @@ import { activateExtension } from '../testUtils';
 import { LocalStylesProvider } from '../../../../providers/styles/localStylesProvider';
 
 suite('LESS Regular component local class suggestions', () => {
-	const contex = activateExtension();
+	const context = activateExtension();
 
 	test('inline style class', async () => {
 		const items = await getCompletitionItems();

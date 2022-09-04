@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { DecoratorByNameMatchingStrategy } from '../../parsers/typescript/componentDecorator/decoratorByNameMatchingStrategy';
 import { DecoratorByPositionMatchingStrategy } from '../../parsers/typescript/componentDecorator/decoratorByPositionMatchingStrategy';
 import { ComponentDecoratorParser } from '../../parsers/typescript/componentDecorator/componentDecoratorParser';
-import { addMaps, getDefaultParsingResult, isDocumentInlineTemplate, joinSuggestions, StyleSuggestionsByType, StyleSyntax } from '../../common';
+import { addMaps, getDefaultParsingResult, isDocumentInlineTemplate, joinSuggestions, StyleSuggestionsByType, StyleSyntax } from '../../utils/common';
 import { StylesToCompletitionItemsParser } from '../../parsers/stylesToCompletitionItemsParser';
 import { angularConfigProvider } from '../angularConfigProvider';
 

@@ -2,8 +2,8 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import { BehaviorSubject } from "rxjs";
 import path = require('path');
-import { StyleSyntax } from '../common';
-import { getAngularJsonPathPattern } from '../configurationHelper';
+import { StyleSyntax } from '../utils/common';
+import { getAngularJsonPathPattern } from '../utils/configuration/configurationHelper';
 
 export type AngularConfig = {
     path: Readonly<string>,

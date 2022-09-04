@@ -48,6 +48,11 @@ Caches suggestions until currently edited file changes. Default is true
 
 Show classes and ids from globally defined styles. Default is true
 
+>Use Angular Include Paths In Style Sheet Navigation Links
+
+Tries to resolve navigation links in @import rules in stylesheets using paths defined in angular.json 'stylePreprocessorOptions.includePaths'.
+Disabled by default.
+
 ## Requirements
 
 * Single Angular.json file (Angular 6+) in project

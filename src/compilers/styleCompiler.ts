@@ -1,6 +1,6 @@
 import path = require('path');
 import { RawSourceMap } from 'source-map-js';
-import { StyleSyntax } from '../common';
+import { StyleSyntax } from '../utils/common';
 import { LessCompiler } from './lessCompiler';
 import { SassCompiler } from './sassCompiler';
 export type StyleCompilationResult = {

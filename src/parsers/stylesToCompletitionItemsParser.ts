@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 
-import { getDefaultParsingResult, StyleSuggestions, StyleSuggestionsByType, StyleSyntax } from "../common";
+import { getDefaultParsingResult, StyleSuggestions, StyleSuggestionsByType, StyleSyntax } from "../utils/common";
 import { TempDocumentContentProvider } from '../documentContentProviders/tempDocumentContentProvider';
 import { SassCompiler } from '../compilers/sassCompiler';
 import { CssParser } from './css/cssParser';

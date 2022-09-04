@@ -2,8 +2,8 @@ import * as vscode from 'vscode';
 import { Observable, Subject, Subscription, switchMap, finalize, startWith, of, map, } from 'rxjs';
 import { angularConfigProvider } from '../angularConfigProvider';
 import { StylesToCompletitionItemsParser } from '../../parsers/stylesToCompletitionItemsParser';
-import { getDefaultParsingResult, StyleSuggestionsByType } from '../../common';
-import { globalStyleSuggestionsEnabled } from '../../configurationHelper';
+import { getDefaultParsingResult, StyleSuggestionsByType } from '../../utils/common';
+import { globalStyleSuggestionsEnabled } from '../../utils/configuration/configurationHelper';
 
 class GlobalStylesProvider {
     private static sortingPrefix: string = 'style2:';

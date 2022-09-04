@@ -94,6 +94,11 @@
             "type": "string",
             "default": "**/*angular.json",
             "description": "File pattern to look for angular.json file"
+          },
+          "angularTemplateStyleSuggestions.useAngularIncludePathsInStyleSheetNavigationLinks": {
+            "type": "boolean",
+            "default": false,
+            "description": "Resolve navigation links for @import rules in stylesheets using 'stylePreprocessorOptions.includePaths' from angular.json when possible"
           }
         }
       }

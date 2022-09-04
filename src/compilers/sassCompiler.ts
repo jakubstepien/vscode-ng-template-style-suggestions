@@ -1,8 +1,8 @@
 import * as sass from 'sass';
 import { RawSourceMap } from 'source-map-js';
 import { pathToFileURL } from 'url';
-import { StyleSyntax } from '../common';
-import { getPathsToIgnore } from '../configurationHelper';
+import { StyleSyntax } from '../utils/common';
+import { getPathsToIgnore } from '../utils/configuration/configurationHelper';
 import { angularConfigProvider } from '../providers/angularConfigProvider';
 import { StyleCompilationResult, StyleCompiler } from './styleCompiler';
 
