@@ -46,7 +46,7 @@ class AngularConfigProvider {
             throw new Error(msg);
         }
         if (angularJson.length > 1) {
-            const msg = "Found multiple angular.json files, searched path: " + angularJsonPath;
+            const msg = "Angular templates style suggestions: Found multiple angular.json files, searched path: " + angularJsonPath;
             await vscode.window.showErrorMessage(msg);
             throw new Error(msg);
         }
@@ -58,16 +58,29 @@ class AngularConfigProvider {
         const mainDir = path.dirname(fsPath);
 
         const configObj = JSON.parse(json);
-        if (projectName == null || projectName === '') {
+        const isProjectNameEmpty = () => projectName == null || projectName === '';
+
+        if (isProjectNameEmpty() && configObj.defaultProject) {
             projectName = configObj.defaultProject as string;
         }
-
+        if (isProjectNameEmpty()) {
+            const projectNames = Object.keys(configObj.projects);
+            if (projectNames.length > 0) {
+                projectName = projectNames[0];
+            }
+        }
+        if (isProjectNameEmpty()) {
+            const msg = "Angular templates style suggestions: could not determine project name";
+            await vscode.window.showErrorMessage(msg);
+            throw new Error(msg);
+        }
+        projectName = projectName!;
         const project = configObj.projects[projectName];
         if (project == null) {
             console.error(`Project ${projectName} doesn't exist in angular.json ${fsPath}`);
             return {
                 path: fsPath,
-                project: projectName,
+                project: '',
                 stylesUrls: [],
                 includePaths: [],
                 nodeModulesLocation: path.join(mainDir, 'node_modules'),
@@ -90,8 +103,18 @@ class AngularConfigProvider {
             stylesUrls: styles,
             includePaths: includePathsFs,
             nodeModulesLocation: path.join(mainDir, 'node_modules'),
-            syntax: options.inlineStyleLanguage,
+            syntax: this.getSyntax(project, options),
         };
+    }
+
+    private getSyntax(project: any, options: any): Readonly<StyleSyntax> {
+        if (project?.schematics != null) {
+            const schematicsStyle = project?.schematics['@schematics/angular:component']?.style;
+            if (schematicsStyle != null) {
+                return schematicsStyle;
+            }
+        }
+        return options.inlineStyleLanguage;
     }
 
     dispose() {
