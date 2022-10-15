@@ -19,10 +19,11 @@ export async function getUris(linkName: string, sourceDocument: TextDocument): P
             //normally relative vscode would handle relative uris but if extension adds a link default ones are skipped
             //so both need to be handled here
             const globalUris = getGlobalUris(linkName);
-            const relativeUri = getRelativeUris(linkName, sourceDocument);
+            const relativeUri = await getRelativeUris(linkName, sourceDocument);
+            const globalFiltered = (await Promise.all(globalUris)).filter(isNotNull).filter(x => x.path !== relativeUri?.path);
             return {
-                mainUri: await relativeUri,
-                globalMatchingUris: (await Promise.all(globalUris)).filter(isNotNull)
+                mainUri: relativeUri,
+                globalMatchingUris: globalFiltered,
             };
         }
     }
