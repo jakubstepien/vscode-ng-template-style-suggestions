@@ -1,4 +1,6 @@
 # Change Log
+## 1.1.3 - 2022.10.16
+- Fixed bug where a global style import in other global style would show 2 links with the same path
 ## 1.1.2 - 2022.09.11
 - Fixed determining style language using inlineStyleLanguage instead of @schematics/angular:component.style from angular.json
 - Changed to use first available project if default is not set
